@@ -1,4 +1,9 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.7)
+
+set(CMAKE_C_COMPILER_WORKS 1)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_CROSSCOMPILING 1)
 
 project(icnlowpan VERSION 0.1 LANGUAGES C)
 
