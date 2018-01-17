@@ -67,12 +67,12 @@ int icnl_ndn_decode(uint8_t *out, const uint8_t *in, unsigned in_len)
 {
     unsigned pos = 0;
     unsigned out_len = 0;
-    uint8_t dispatch = in[pos++];
+    uint8_t *dispatch = (uint8_t *) (in + pos++);
 
-    if (dispatch == ICNL_DISPATCH_NDN_INT) {
+    if (*dispatch == ICNL_DISPATCH_NDN_INT) {
         out_len = icnl_ndn_decode_interest(out, in + pos, in_len - pos);
     }
-    else if (dispatch == ICNL_DISPATCH_NDN_DATA) {
+    else if (*dispatch == ICNL_DISPATCH_NDN_DATA) {
         out_len = icnl_ndn_decode_interest(out, in + pos, in_len - pos);
     }
 

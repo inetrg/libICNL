@@ -50,16 +50,16 @@ int icnl_decode(uint8_t *out, const uint8_t *in, unsigned in_len)
         return -1;
     }
 
-    uint8_t dispatch = in[pos];
+    uint8_t *dispatch = (uint8_t *) (in + pos);
 
     if (0) {}
 #ifdef MODULE_NDNLOWPAN
-    else if (dispatch & 0x80) {
+    else if (*dispatch & 0x80) {
         out_len = icnl_ndn_decode(out, in + pos, in_len - pos);
     }
 #endif
 #ifdef MODULE_NDNLOWPAN
-    else if (dispatch ^ 0x80) {
+    else if (*dispatch ^ 0x80) {
         ICNL_DBG("CCN is unsupported currently\n");
         return -1;
     }
