@@ -22,20 +22,7 @@
 /**
  * @brief Page 2
  */
-#define ICNL_DISPATCH_PAGE (2)
-
-/**
- * @brief Paging Switch dispatch
- * @see [RFC 8025](https://tools.ietf.org/html/rfc8025)
- *
- * @param[out]  out     output buffer to write the paging switch dispatch to
- * @param[in]   page    page to switch to
- */
-static inline size_t icnl_page_switch_add(uint8_t *out, uint8_t page)
-{
-    *out = 0xF0 | (0x0F & page);
-    return 1;
-}
+#define ICNL_DISPATCH_PAGE (0xF2)
 
 /**
  * @brief       ICN protocol identifier
@@ -59,12 +46,22 @@ typedef enum {
  * @param[in]   in      input buffer that is to be encoded
  * @param[in]   in_len  length of the input buffer @p in
  *
- * @pre         \f$ |out| > in\_len \f$
+ * @return      Number of bytes written to @p out
+ * @retval      -1 on error
+ */
+int icnl_encode(uint8_t *out, icnl_proto_t proto, uint8_t *in, unsigned in_len);
+
+/**
+ * @brief       Decodes a packet
+ *
+ * @param[out]  out     output buffer that will contain the decoded format
+ * @param[in]   in      input buffer that is to be decoded
+ * @param[in]   in_len  length of the input buffer @p in
  *
  * @return      Number of bytes written to @p out
+ * @retval      -1 on error
  */
-size_t icnl_encode(uint8_t *out, icnl_proto_t proto, uint8_t *in,
-                   size_t in_len);
+int icnl_encode(uint8_t *out, icnl_proto_t proto, uint8_t *in, unsigned in_len);
  
 #endif /* CORE_H */
 /** @} */

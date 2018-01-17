@@ -30,36 +30,14 @@
 #define ICNL_DISPATCH_NDN_DATA  (0x90)
 
 /**
- * @brief   NDN message types
+ * @brief   NDN TLVs
  * @{
  */
 typedef enum {
-    ICNL_NDN_MSGT_INTEREST, /**< NDN Interest */
-    ICNL_NDN_MSGT_DATA      /**< NDN Data */
-} icnl_ndn_msg_type_t;
+    ICNL_NDN_TLV_INTEREST = 0x05,   /**< NDN Interest */
+    ICNL_NDN_TLV_DATA = 0x06        /**< NDN Data */
+} icnl_ndn_tlv_t;
 /** @} */
-
-/**
- * @brief Adds a dispatch type for NDN Interest
- *
- * @param[out]  out     output buffer to write the dispatch to
- */
-static inline size_t icnl_ndn_dispatch_add_interest(uint8_t *out)
-{
-    *out = ICNL_DISPATCH_NDN_INT;
-    return 1;
-}
-
-/**
- * @brief Adds a dispatch type for NDN Data
- *
- * @param[out]  out     output buffer to write the dispatch to
- */
-static inline size_t icnl_ndn_dispatch_add_data(uint8_t *out)
-{
-    *out = ICNL_DISPATCH_NDN_DATA;
-    return 1;
-}
 
 /**
  * @brief Encodes a NDN message
@@ -68,37 +46,20 @@ static inline size_t icnl_ndn_dispatch_add_data(uint8_t *out)
  * @param[in]   in      input buffer that is to be encoded
  * @param[in]   in_len  length of the input buffer @p in
  *
- * @pre         \f$ |out| > in\_len \f$
- *
  * @return      Number of bytes written to @p out
  */
-size_t icnl_ndn_encode(uint8_t *out, uint8_t *in, size_t in_len);
+int icnl_ndn_encode(uint8_t *out, uint8_t *in, unsigned in_len);
 
 /**
- * @brief Encodes an NDN Interest message
+ * @brief Decodes an NDN message
  *
- * @param[out]  out     output buffer to write the encoded Interest to
- * @param[in]   in      input buffer that is to be encoded
+ * @param[out]  out     output buffer to write the decoded message to
+ * @param[in]   in      input buffer that is to be decoded
  * @param[in]   in_len  length of the input buffer @p in
- *
- * @pre         \f$ |out| > in\_len \f$
  *
  * @return      Number of bytes written to @p out
  */
-size_t icnl_ndn_encode_interest(uint8_t *out, uint8_t *in, size_t in_len);
-
-/**
- * @brief Encodes an NDN Data message
- *
- * @param[out]  out     output buffer to write the encoded Data to
- * @param[in]   in      input buffer that is to be encoded
- * @param[in]   in_len  length of the input buffer @p in
- *
- * @pre         \f$ |out| > in\_len \f$
- *
- * @return      Number of bytes written to @p out
- */
-size_t icnl_ndn_encode_data(uint8_t *out, uint8_t *in, size_t in_len);
+int icnl_ndn_decode(uint8_t *out, uint8_t *in, unsigned in_len);
 
 #endif /* NDNLOWPAN_H */
 /** @} */

@@ -44,11 +44,11 @@ static const uint8_t ndn_data_disp[] = {
 void test_page_add(void)
 {
     uint8_t out[1];
-    size_t pos = 0;
+    unsigned pos = 0;
 
-    pos += icnl_page_switch_add(out, ICNL_DISPATCH_PAGE);
+    out[pos++] = ICNL_DISPATCH_PAGE;
 
-    TEST_ASSERT_EQUAL_UINT8(0xF0 | ICNL_DISPATCH_PAGE, out[0]);
+    TEST_ASSERT_EQUAL_UINT8(ICNL_DISPATCH_PAGE, out[0]);
     TEST_ASSERT_EQUAL_UINT(1, pos);
 }
 
@@ -56,7 +56,7 @@ void test_page_add(void)
 void test_encode_ndn_int(void)
 {
     uint8_t out[sizeof(ndn_int) / sizeof(ndn_int[0]) + 2];
-    size_t pos = 0;
+    unsigned pos = 0;
 
     pos += icnl_encode(out, ICNL_PROTO_NDN, (uint8_t *)ndn_int,
                        sizeof(ndn_int)/sizeof(ndn_int[0]));
@@ -68,7 +68,7 @@ void test_encode_ndn_int(void)
 void test_encode_ndn_data(void)
 {
     uint8_t out[sizeof(ndn_data) / sizeof(ndn_data[0]) + 2];
-    size_t pos = 0;
+    unsigned pos = 0;
 
     pos += icnl_encode(out, ICNL_PROTO_NDN, (uint8_t *)ndn_data,
                        sizeof(ndn_data)/sizeof(ndn_data[0]));

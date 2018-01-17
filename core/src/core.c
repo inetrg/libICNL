@@ -15,13 +15,12 @@
 #include "ndnlowpan.h"
 #endif
 
-size_t icnl_encode(uint8_t *out, icnl_proto_t proto, uint8_t *in,
-                   size_t in_len)
+int icnl_encode(uint8_t *out, icnl_proto_t proto, uint8_t *in, unsigned in_len)
 {
-    size_t pos = 0;
+    unsigned pos = 0;
 
     /* page 2 */
-    pos += icnl_page_switch_add(out + pos, ICNL_DISPATCH_PAGE);
+    out[pos++] = ICNL_DISPATCH_PAGE;
 
     switch (proto) {
 #ifdef MODULE_NDNLOWPAN
@@ -35,6 +34,38 @@ size_t icnl_encode(uint8_t *out, icnl_proto_t proto, uint8_t *in,
 #endif
         default:
             ICNL_DBG("could not identify ICN protocol\n");
+            return -1;
     }
 	return pos;
+}
+
+int icnl_decode(uint8_t *out, uint8_t *in, unsigned in_len)
+{
+    unsigned pos = 0;
+    unsigned out_len = 0;
+
+    if (in[pos++] != ICNL_DISPATCH_PAGE) {
+        ICNL_DBG("unexpected dispatch page\n");
+        return -1;
+    }
+
+    uint8_t dispatch = in[pos];
+
+    if (0) {}
+#ifdef MODULE_NDNLOWPAN
+    else if (dispatch & 0x80) {
+        out_len = icnl_ndn_decode(out, in + pos, in_len - pos);
+    }
+#endif
+#ifdef MODULE_NDNLOWPAN
+    else if (dispatch ^ 0x80) {
+        ICNL_DBG("CCN is unsupported currently\n");
+        return -1;
+    }
+#endif
+    else {
+        ICNL_DBG("unexpected dispatch type\n");
+        return -1;
+    }
+	return out_len;
 }

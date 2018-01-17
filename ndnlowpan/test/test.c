@@ -9,46 +9,30 @@
 #include "unity.h"
 #include "ndnlowpan.h"
  
-void test_ndn_encode_interest(void)
+void test_ndn_encode(void)
 {
     uint8_t out[2];
-    uint8_t in[1] = { 0xAA };
-    size_t pos = 0;
+    uint8_t in_int[] = { ICNL_NDN_TLV_INTEREST };
+    uint8_t in_data[] = { ICNL_NDN_TLV_DATA };
 
-    pos += icnl_ndn_encode_interest(out, in, sizeof(in)/sizeof(in[0]));
+    unsigned pos_int = icnl_ndn_encode(out, in_int, sizeof(in_int)/sizeof(in_int[0]));
 
-    TEST_ASSERT_EQUAL_UINT(sizeof(in)/sizeof(in[0]) + 1,  pos);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(in, out + 1, pos - 1);
-}
+    TEST_ASSERT_EQUAL_UINT(sizeof(in_int)/sizeof(in_int[0]) + 1, pos_int);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(in_int, out + 1, pos_int - 1);
+    TEST_ASSERT_EQUAL_UINT8(ICNL_NDN_TLV_INTEREST, out[1]);
 
-void test_ndn_encode_data(void)
-{
-    uint8_t out[2];
-    uint8_t in[1] = { 0xAA };
-    size_t pos = 0;
+    unsigned pos_data = icnl_ndn_encode(out, in_data, sizeof(in_data)/sizeof(in_data[0]));
 
-    pos += icnl_ndn_encode_data(out, in, sizeof(in)/sizeof(in[0]));
-
-    TEST_ASSERT_EQUAL_UINT(sizeof(in)/sizeof(in[0]) + 1,  pos);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(in, out + 1, pos - 1);
-}
-
-void test_dispatch_add_interest(void)
-{
-    uint8_t out[1];
-    size_t pos = 0;
-
-    pos += icnl_ndn_dispatch_add_interest(out);
-
-    TEST_ASSERT_EQUAL_UINT(1, pos);
-    TEST_ASSERT_EQUAL_UINT(ICNL_DISPATCH_NDN_INT, out[0]);
+    TEST_ASSERT_EQUAL_UINT(sizeof(in_data)/sizeof(in_data[0]) + 1, pos_data);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(in_data, out + 1, pos_data - 1);
+    TEST_ASSERT_EQUAL_UINT8(ICNL_NDN_TLV_DATA, out[1]);
 }
  
 int main(void)
 {
     UNITY_BEGIN();
  
-    RUN_TEST(test_dispatch_add_interest);
+    RUN_TEST(test_ndn_encode);
  
     return UNITY_END();
 }
