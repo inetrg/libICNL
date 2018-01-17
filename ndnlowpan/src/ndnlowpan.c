@@ -11,7 +11,7 @@
 
 #include "ndnlowpan.h"
 
-int icnl_ndn_encode_data(uint8_t *out, uint8_t *in, unsigned in_len)
+int icnl_ndn_encode_data(uint8_t *out, const uint8_t *in, unsigned in_len)
 {
     unsigned pos = 0;
 
@@ -23,7 +23,7 @@ int icnl_ndn_encode_data(uint8_t *out, uint8_t *in, unsigned in_len)
     return pos;
 }
 
-int icnl_ndn_encode_interest(uint8_t *out, uint8_t *in, unsigned in_len)
+int icnl_ndn_encode_interest(uint8_t *out, const uint8_t *in, unsigned in_len)
 {
     unsigned pos = 0;
 
@@ -35,7 +35,7 @@ int icnl_ndn_encode_interest(uint8_t *out, uint8_t *in, unsigned in_len)
     return pos;
 }
 
-int icnl_ndn_encode(uint8_t *out, uint8_t *in, unsigned in_len)
+int icnl_ndn_encode(uint8_t *out, const uint8_t *in, unsigned in_len)
 {
     unsigned pos = 0;
 
@@ -49,14 +49,21 @@ int icnl_ndn_encode(uint8_t *out, uint8_t *in, unsigned in_len)
     return pos;
 }
 
-int icnl_ndn_decode_interest(uint8_t *out, uint8_t *in, unsigned in_len)
+int icnl_ndn_decode_interest(uint8_t *out, const uint8_t *in, unsigned in_len)
 {
     memcpy(out, in, in_len);
 
     return in_len;
 }
 
-int icnl_ndn_decode(uint8_t *out, uint8_t *in, unsigned in_len)
+int icnl_ndn_decode_data(uint8_t *out, const uint8_t *in, unsigned in_len)
+{
+    memcpy(out, in, in_len);
+
+    return in_len;
+}
+
+int icnl_ndn_decode(uint8_t *out, const uint8_t *in, unsigned in_len)
 {
     unsigned pos = 0;
     unsigned out_len = 0;
@@ -66,7 +73,7 @@ int icnl_ndn_decode(uint8_t *out, uint8_t *in, unsigned in_len)
         out_len = icnl_ndn_decode_interest(out, in + pos, in_len - pos);
     }
     else if (dispatch == ICNL_DISPATCH_NDN_DATA) {
-
+        out_len = icnl_ndn_decode_interest(out, in + pos, in_len - pos);
     }
 
     return out_len;

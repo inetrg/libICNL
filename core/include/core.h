@@ -49,7 +49,8 @@ typedef enum {
  * @return      Number of bytes written to @p out
  * @retval      -1 on error
  */
-int icnl_encode(uint8_t *out, icnl_proto_t proto, uint8_t *in, unsigned in_len);
+int icnl_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
+                unsigned in_len);
 
 /**
  * @brief       Decodes a packet
@@ -61,7 +62,7 @@ int icnl_encode(uint8_t *out, icnl_proto_t proto, uint8_t *in, unsigned in_len);
  * @return      Number of bytes written to @p out
  * @retval      -1 on error
  */
-int icnl_encode(uint8_t *out, icnl_proto_t proto, uint8_t *in, unsigned in_len);
+int icnl_decode(uint8_t *out, const uint8_t *in, unsigned in_len);
  
 #endif /* CORE_H */
 /** @} */

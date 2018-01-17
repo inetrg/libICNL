@@ -48,7 +48,7 @@ typedef enum {
  *
  * @return      Number of bytes written to @p out
  */
-int icnl_ndn_encode(uint8_t *out, uint8_t *in, unsigned in_len);
+int icnl_ndn_encode(uint8_t *out, const uint8_t *in, unsigned in_len);
 
 /**
  * @brief Decodes an NDN message
@@ -59,7 +59,7 @@ int icnl_ndn_encode(uint8_t *out, uint8_t *in, unsigned in_len);
  *
  * @return      Number of bytes written to @p out
  */
-int icnl_ndn_decode(uint8_t *out, uint8_t *in, unsigned in_len);
+int icnl_ndn_decode(uint8_t *out, const uint8_t *in, unsigned in_len);
 
 #endif /* NDNLOWPAN_H */
 /** @} */

@@ -41,40 +41,41 @@ static const uint8_t ndn_data_disp[] = {
     0x17, 0x00
 };
  
-void test_page_add(void)
-{
-    uint8_t out[1];
-    unsigned pos = 0;
-
-    out[pos++] = ICNL_DISPATCH_PAGE;
-
-    TEST_ASSERT_EQUAL_UINT8(ICNL_DISPATCH_PAGE, out[0]);
-    TEST_ASSERT_EQUAL_UINT(1, pos);
-}
-
 #ifdef MODULE_NDNLOWPAN
-void test_encode_ndn_int(void)
+void test_encode_ndn(void)
 {
-    uint8_t out[sizeof(ndn_int) / sizeof(ndn_int[0]) + 2];
-    unsigned pos = 0;
+    uint8_t out_int[sizeof(ndn_int) / sizeof(ndn_int[0]) + 2];
+    uint8_t out_data[sizeof(ndn_data) / sizeof(ndn_data[0]) + 2];
 
-    pos += icnl_encode(out, ICNL_PROTO_NDN, (uint8_t *)ndn_int,
-                       sizeof(ndn_int)/sizeof(ndn_int[0]));
+    unsigned pos_int = icnl_encode(out_int, ICNL_PROTO_NDN, (uint8_t *)ndn_int,
+                                   sizeof(ndn_int)/sizeof(ndn_int[0]));
 
-    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int)/sizeof(ndn_int[0]) + 2, pos);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int, out + 2, pos - 2);
+    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int)/sizeof(ndn_int[0]) + 2, pos_int);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int, out_int + 2, pos_int - 2);
+
+    unsigned pos_data = icnl_encode(out_data, ICNL_PROTO_NDN, (uint8_t *)ndn_data,
+                                    sizeof(ndn_data)/sizeof(ndn_data[0]));
+
+    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data)/sizeof(ndn_data[0]) + 2, pos_data);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data, out_data + 2, pos_data - 2);
 }
 
-void test_encode_ndn_data(void)
+void test_decode_ndn(void)
 {
-    uint8_t out[sizeof(ndn_data) / sizeof(ndn_data[0]) + 2];
-    unsigned pos = 0;
+    uint8_t out_int[sizeof(ndn_int)/sizeof(ndn_int[0])];
+    uint8_t out_data[sizeof(ndn_data)/sizeof(ndn_data[0])];
 
-    pos += icnl_encode(out, ICNL_PROTO_NDN, (uint8_t *)ndn_data,
-                       sizeof(ndn_data)/sizeof(ndn_data[0]));
+    unsigned pos_int = icnl_decode(out_int, (uint8_t *)ndn_int_disp,
+                                   sizeof(ndn_int_disp)/sizeof(ndn_int_disp[0]));
 
-    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data)/sizeof(ndn_data[0]) + 2, pos);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data, out + 2, pos - 2);
+    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int)/sizeof(ndn_int[0]), pos_int);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int, out_int, pos_int);
+
+    unsigned pos_data = icnl_decode(out_data, (uint8_t *)ndn_data_disp,
+                                   sizeof(ndn_data_disp)/sizeof(ndn_data_disp[0]));
+
+    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data)/sizeof(ndn_data[0]), pos_data);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data, out_data, pos_data);
 }
 #endif
  
@@ -82,10 +83,9 @@ int main(void)
 {
     UNITY_BEGIN();
  
-    RUN_TEST(test_page_add);
 #ifdef MODULE_NDNLOWPAN
-    RUN_TEST(test_encode_ndn_int);
-    RUN_TEST(test_encode_ndn_data);
+    RUN_TEST(test_encode_ndn);
+    RUN_TEST(test_decode_ndn);
 #endif
  
     return UNITY_END();

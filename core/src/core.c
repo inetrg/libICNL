@@ -15,7 +15,8 @@
 #include "ndnlowpan.h"
 #endif
 
-int icnl_encode(uint8_t *out, icnl_proto_t proto, uint8_t *in, unsigned in_len)
+int icnl_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
+                unsigned in_len)
 {
     unsigned pos = 0;
 
@@ -39,7 +40,7 @@ int icnl_encode(uint8_t *out, icnl_proto_t proto, uint8_t *in, unsigned in_len)
 	return pos;
 }
 
-int icnl_decode(uint8_t *out, uint8_t *in, unsigned in_len)
+int icnl_decode(uint8_t *out, const uint8_t *in, unsigned in_len)
 {
     unsigned pos = 0;
     unsigned out_len = 0;
