@@ -7,15 +7,15 @@
  */
 
 /**
- * @file        core.h
- * @brief       core module functions
+ * @file        icnlowpan.h
+ * @brief       icnlowpan module functions
  * @author      Cenk Gündoğan <cenk.guendogan@haw-hamburg.de>
  * @copyright   GNU Lesser General Public License v2.1
  * @addtogroup  icnlowpan icnlowpan module
  * @{
  */
-#ifndef CORE_H
-#define CORE_H
+#ifndef ICNLOWPAN_H
+#define ICNLOWPAN_H
 
 #include <stdint.h>
 
@@ -64,5 +64,5 @@ int icnl_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
  */
 int icnl_decode(uint8_t *out, const uint8_t *in, unsigned in_len);
  
-#endif /* CORE_H */
+#endif /* ICNLOWPAN_H */
 /** @} */

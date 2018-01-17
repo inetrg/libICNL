@@ -7,7 +7,7 @@
  */
 
 #include "unity.h"
-#include "core.h"
+#include "icnlowpan.h"
 
 #ifdef MODULE_NDNLOWPAN
 #include "ndnlowpan.h"
@@ -72,7 +72,7 @@ void test_decode_ndn(void)
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int, out_int, pos_int);
 
     unsigned pos_data = icnl_decode(out_data, (uint8_t *)ndn_data_disp,
-                                   sizeof(ndn_data_disp)/sizeof(ndn_data_disp[0]));
+                                    sizeof(ndn_data_disp)/sizeof(ndn_data_disp[0]));
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data)/sizeof(ndn_data[0]), pos_data);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data, out_data, pos_data);

@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 
-#include "core.h"
+#include "icnlowpan.h"
 #include "debug.h"
 
 #ifdef MODULE_NDNLOWPAN

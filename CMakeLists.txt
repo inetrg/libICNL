@@ -43,13 +43,13 @@ if (BUILD_DEBUG)
     add_definitions(-DICNL_DEBUG=1)
 endif (BUILD_DEBUG)
 
-add_definitions(-DMODULE_CORE)
+add_definitions(-DMODULE_ICNLOWPAN)
 
 if (BUILD_NDNLOWPAN)
     add_definitions(-DMODULE_NDNLOWPAN)
 endif(BUILD_NDNLOWPAN)
 
-add_subdirectory(core)
+add_subdirectory(icnlowpan)
 
 if (BUILD_NDNLOWPAN)
     add_subdirectory(ndnlowpan)
