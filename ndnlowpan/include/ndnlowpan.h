@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #include "icnlowpan.h"
+#include "debug.h"
 
 /**
  * @brief   Dispatch type for NDN Interest
@@ -48,8 +49,11 @@
  * @{
  */
 typedef enum {
-    ICNL_NDN_TLV_INTEREST = 0x05,   /**< NDN Interest */
-    ICNL_NDN_TLV_DATA = 0x06        /**< NDN Data */
+    ICNL_NDN_TLV_IMPLICIT_SHA256_DIGEST_COMPONENT = 0x01,   /**< NDN GenericNameComponent */
+    ICNL_NDN_TLV_INTEREST                         = 0x05,   /**< NDN Interest */
+    ICNL_NDN_TLV_DATA                             = 0x06,   /**< NDN Data */
+    ICNL_NDN_TLV_NAME                             = 0x07,   /**< NDN Name */
+    ICNL_NDN_TLV_GENERIC_NAME_COMPONENT           = 0x08,   /**< NDN GenericNameComponent */
 } icnl_ndn_tlv_t;
 /** @} */
 

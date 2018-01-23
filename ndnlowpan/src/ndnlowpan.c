@@ -35,16 +35,55 @@ int icnl_ndn_encode_interest(uint8_t *out, const uint8_t *in, unsigned in_len)
     return pos;
 }
 
+int icnl_ndn_encode_name(uint8_t *out, const uint8_t *in, unsigned *pos_in)
+{
+    unsigned pos_out = 0;
+    unsigned name_len = 0;
+
+    if (in[*pos_in] != ICNL_NDN_TLV_NAME) {
+        ICNL_DBG("error while encoding name: expected 0x%x, got 0x%x\n",
+                 ICNL_NDN_TLV_NAME, in[*pos_in]);
+        return -1;
+    }
+
+    /* skip name type */
+    (*pos_in)++;
+
+    name_len = in[*pos_in];
+    out[pos_out++] = in[(*pos_in)++];
+
+    uint8_t comp_styles = 0;
+    for (unsigned i = 0; i < name_len;) {
+        if (in[*pos_in + i] == ICNL_NDN_TLV_GENERIC_NAME_COMPONENT) {
+            comp_styles |= 0x1;
+        }
+        else if (in[*pos_in + i] == ICNL_NDN_TLV_IMPLICIT_SHA256_DIGEST_COMPONENT) {
+            comp_styles |= 0x2;
+        }
+        i += in[*pos_in + i + 1] + 2;
+    }
+
+    return pos_out;
+}
+
 int icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in, unsigned in_len)
 {
     unsigned pos_out = 0;
     unsigned pos_in = 0;
+    int res = 0;
 
     out[pos_out++] = ICNL_DISPATCH_NDN_INT_HC_A;
     out[pos_out++] = 0x00;
 
-    /* ignore packet type */
+    /* skip packet type */
     pos_in++;
+
+    out[pos_out++] = in[pos_in++];
+
+    if ((res = icnl_ndn_encode_name(out + pos_out, in, &pos_in)) < 0) {
+        return res;
+    }
+    pos_out += res;
 
     memcpy(out + pos_out, in + pos_in, in_len - pos_in);
     pos_out += in_len - pos_in;

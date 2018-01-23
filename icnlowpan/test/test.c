@@ -28,7 +28,7 @@ static const uint8_t ndn_int_disp[] = {
 
 static const uint8_t ndn_int_hc_01[] = {
     0xF2, ICNL_DISPATCH_NDN_INT_HC_A, 0x00, /* Page 2 and LOWPAN_NDN_INT_HC_A */
-    0x11, 0x07, 0x05, 0x08, 0x03, 0x48, 0x41,
+    0x11, 0x05, 0x08, 0x03, 0x48, 0x41,
     0x57, 0x0a, 0x04, 0x12, 0x57, 0x05, 0x00, 0x0c,
     0x02, 0x0f, 0xa0
 };
@@ -74,7 +74,7 @@ void test_encode_ndn_hc_01(void)
     unsigned pos_int = icnl_encode(out_int, ICNL_PROTO_NDN_HC, (uint8_t *)ndn_int,
                                    sizeof(ndn_int)/sizeof(ndn_int[0]));
 
-    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int)/sizeof(ndn_int[0]) + 2, pos_int);
+    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int_hc_01)/sizeof(ndn_int_hc_01[0]), pos_int);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int_hc_01, out_int, pos_int);
 }
 
