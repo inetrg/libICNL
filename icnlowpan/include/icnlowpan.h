@@ -31,9 +31,11 @@
 typedef enum {
 #ifdef MODULE_NDNLOWPAN
     ICNL_PROTO_NDN,      /**< protocol identifier for NDN */
+    ICNL_PROTO_NDN_HC,   /**< protocol identifier for NDN */
 #endif
 #ifdef MODULE_CCNLOWPAN
     ICNL_PROTO_CCN       /**< protocol identifier for CCN */
+    ICNL_PROTO_CCN_HC    /**< protocol identifier for CCN */
 #endif
 } icnl_proto_t;
 /** @} */

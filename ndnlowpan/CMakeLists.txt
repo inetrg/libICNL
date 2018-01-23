@@ -1,7 +1,8 @@
 add_static_library(ndnlowpan)
 
 target_sources(ndnlowpan PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/ndnlowpan.c")
-target_include_directories(ndnlowpan PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+target_include_directories(ndnlowpan PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/"
+                                     PUBLIC "${ICNLOWPAN_INCLUDE_DIRS}")
 
 if (BUILD_TESTING)
     add_executable(unittest-ndnlowpan "${CMAKE_CURRENT_SOURCE_DIR}/test/test.c")

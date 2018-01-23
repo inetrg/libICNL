@@ -9,6 +9,9 @@ target_sources(icnlowpan PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/icnlowpan.c")
 target_link_libraries(${ICNLOWPAN_LIBS})
 target_include_directories(icnlowpan PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
+set(ICNLOWPAN_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include/"
+    CACHE INTERNAL "${ICNLOWPAN}: Include Directories" FORCE)
+
 if (BUILD_TESTING)
     add_executable(unittest-icnlowpan "${CMAKE_CURRENT_SOURCE_DIR}/test/test.c")
     target_link_libraries(unittest-icnlowpan unity icnlowpan)

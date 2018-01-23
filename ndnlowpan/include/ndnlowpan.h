@@ -19,15 +19,29 @@
  
 #include <stdint.h>
 
+#include "icnlowpan.h"
+
 /**
  * @brief   Dispatch type for NDN Interest
  */
-#define ICNL_DISPATCH_NDN_INT   (0x80)
+#define ICNL_DISPATCH_NDN_INT       (0x80)
 
 /**
  * @brief   Dispatch type for NDN Data
  */
-#define ICNL_DISPATCH_NDN_DATA  (0x90)
+#define ICNL_DISPATCH_NDN_DATA      (0x90)
+
+/**
+ * @brief   Dispatch type for NDN Interest with header compression.
+ *          A octet follows.
+ */
+#define ICNL_DISPATCH_NDN_INT_HC_A  (0x88)
+
+/**
+ * @brief   Dispatch type for NDN Interest with header compression.
+ *          A and B octet follows.
+ */
+#define ICNL_DISPATCH_NDN_INT_HC_AB (0x89)
 
 /**
  * @brief   NDN TLVs
@@ -43,23 +57,27 @@ typedef enum {
  * @brief Encodes a NDN message
  *
  * @param[out]  out     output buffer to write the encoded message to
+ * @param[in]   proto   ICN protocol @ref icnl_proto_t
  * @param[in]   in      input buffer that is to be encoded
  * @param[in]   in_len  length of the input buffer @p in
  *
  * @return      Number of bytes written to @p out
  */
-int icnl_ndn_encode(uint8_t *out, const uint8_t *in, unsigned in_len);
+int icnl_ndn_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
+                    unsigned in_len);
 
 /**
  * @brief Decodes an NDN message
  *
  * @param[out]  out     output buffer to write the decoded message to
+ * @param[in]   proto   ICN protocol @ref icnl_proto_t
  * @param[in]   in      input buffer that is to be decoded
  * @param[in]   in_len  length of the input buffer @p in
  *
  * @return      Number of bytes written to @p out
  */
-int icnl_ndn_decode(uint8_t *out, const uint8_t *in, unsigned in_len);
+int icnl_ndn_decode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
+                    unsigned in_len);
 
 #endif /* NDNLOWPAN_H */
 /** @} */

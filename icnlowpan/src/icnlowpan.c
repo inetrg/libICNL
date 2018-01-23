@@ -23,19 +23,21 @@ int icnl_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
     /* page 2 */
     out[pos++] = ICNL_DISPATCH_PAGE;
 
-    switch (proto) {
+    if (0) {}
 #ifdef MODULE_NDNLOWPAN
-        case ICNL_PROTO_NDN:
-            pos += icnl_ndn_encode(out + pos, in, in_len);
-            break;
+    else if ((proto == ICNL_PROTO_NDN) || (proto == ICNL_PROTO_NDN_HC)) {
+        pos += icnl_ndn_encode(out + pos, proto, in, in_len);
+    }
 #endif
 #ifdef MODULE_CCNLOWPAN
-        case ICNL_PROTO_CCN:
-            break;
+    else if ((proto == ICNL_PROTO_CCN) || (proto == ICNL_PROTO_CCN_HC)) {
+        ICNL_DBG("CCN is unsupported currently\n");
+        return -1;
+    }
 #endif
-        default:
-            ICNL_DBG("could not identify ICN protocol\n");
-            return -1;
+    else {
+        ICNL_DBG("could not identify ICN protocol\n");
+        return -1;
     }
 	return pos;
 }
@@ -55,7 +57,7 @@ int icnl_decode(uint8_t *out, const uint8_t *in, unsigned in_len)
     if (0) {}
 #ifdef MODULE_NDNLOWPAN
     else if (*dispatch & 0x80) {
-        out_len = icnl_ndn_decode(out, in + pos, in_len - pos);
+        out_len = icnl_ndn_decode(out, ICNL_PROTO_NDN, in + pos, in_len - pos);
     }
 #endif
 #ifdef MODULE_NDNLOWPAN
