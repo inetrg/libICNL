@@ -35,10 +35,12 @@ int icnl_ndn_encode_interest(uint8_t *out, const uint8_t *in, unsigned in_len)
     return pos;
 }
 
-int icnl_ndn_encode_name(uint8_t *out, const uint8_t *in, unsigned *pos_in)
+int icnl_ndn_encode_name(uint8_t *out, const uint8_t *in, unsigned *pos_in,
+                         uint8_t *a)
 {
     unsigned pos_out = 0;
     unsigned name_len = 0;
+    uint8_t *name_length;
 
     if (in[*pos_in] != ICNL_NDN_TLV_NAME) {
         ICNL_DBG("error while encoding name: expected 0x%x, got 0x%x\n",
@@ -49,18 +51,49 @@ int icnl_ndn_encode_name(uint8_t *out, const uint8_t *in, unsigned *pos_in)
     /* skip name type */
     (*pos_in)++;
 
-    name_len = in[*pos_in];
-    out[pos_out++] = in[(*pos_in)++];
+    name_len = in[(*pos_in)++];
+    name_length = out + (pos_out++);
 
     uint8_t comp_styles = 0;
+    *a &= 0x3F;
+
     for (unsigned i = 0; i < name_len;) {
         if (in[*pos_in + i] == ICNL_NDN_TLV_GENERIC_NAME_COMPONENT) {
-            comp_styles |= 0x1;
+            comp_styles |= 0x40;
         }
         else if (in[*pos_in + i] == ICNL_NDN_TLV_IMPLICIT_SHA256_DIGEST_COMPONENT) {
-            comp_styles |= 0x2;
+            comp_styles |= 0x80;
         }
         i += in[*pos_in + i + 1] + 2;
+    }
+
+    if (comp_styles == 0x00) {
+        ICNL_DBG("error while encoding name: components: 0x%x\n", comp_styles);
+        return -1;
+    }
+    else if (comp_styles == 0xC0) {
+        memcpy(out + pos_out, in + *pos_in, name_len);
+        *pos_in += name_len;
+        pos_out += name_len;
+    }
+    else {
+        *a |= comp_styles;
+
+        uint8_t total_name_length = 0;
+        for (unsigned i = 0; i < name_len;) {
+            /* skip component type */
+            (*pos_in)++;
+            i++;
+
+            /* component length including length field */
+            uint8_t comp_len = in[*pos_in] + 1;
+            total_name_length += comp_len;
+            memcpy(out + pos_out, in + *pos_in, comp_len);
+            pos_out += comp_len;
+            (*pos_in) += comp_len;
+            i += comp_len;
+        }
+        *name_length = total_name_length;
     }
 
     return pos_out;
@@ -70,9 +103,12 @@ int icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in, unsigned in_len
 {
     unsigned pos_out = 0;
     unsigned pos_in = 0;
+    uint8_t *a;
     int res = 0;
 
     out[pos_out++] = ICNL_DISPATCH_NDN_INT_HC_A;
+
+    a = out + pos_out;
     out[pos_out++] = 0x00;
 
     /* skip packet type */
@@ -80,7 +116,7 @@ int icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in, unsigned in_len
 
     out[pos_out++] = in[pos_in++];
 
-    if ((res = icnl_ndn_encode_name(out + pos_out, in, &pos_in)) < 0) {
+    if ((res = icnl_ndn_encode_name(out + pos_out, in, &pos_in, a)) < 0) {
         return res;
     }
     pos_out += res;
