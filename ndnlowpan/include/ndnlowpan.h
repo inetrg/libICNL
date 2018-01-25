@@ -45,6 +45,12 @@
 #define ICNL_DISPATCH_NDN_INT_HC_AB (0x89)
 
 /**
+ * @brief   Dispatch type for NDN Data with header compression.
+ *          A octet follows.
+ */
+#define ICNL_DISPATCH_NDN_DATA_HC_A (0x98)
+
+/**
  * @brief   NDN TLVs
  * @{
  */

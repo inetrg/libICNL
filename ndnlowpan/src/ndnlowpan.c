@@ -104,17 +104,21 @@ int icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in, unsigned in_len
     unsigned pos_out = 0;
     unsigned pos_in = 0;
     uint8_t *a;
+    uint8_t *packet_length;
     int res = 0;
 
     out[pos_out++] = ICNL_DISPATCH_NDN_INT_HC_A;
 
-    a = out + pos_out;
-    out[pos_out++] = 0x00;
+    a = out + (pos_out++);
+    *a = 0x00;
 
     /* skip packet type */
     pos_in++;
 
-    out[pos_out++] = in[pos_in++];
+    /* remember position of packet length */
+    packet_length = out + (pos_out++);
+    /* skip packet length */
+    pos_in++;
 
     if ((res = icnl_ndn_encode_name(out + pos_out, in, &pos_in, a)) < 0) {
         return res;
@@ -123,6 +127,8 @@ int icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in, unsigned in_len
 
     memcpy(out + pos_out, in + pos_in, in_len - pos_in);
     pos_out += in_len - pos_in;
+
+    *packet_length = pos_out - 3;
 
     return pos_out;
 }
@@ -159,11 +165,77 @@ int icnl_ndn_decode_interest(uint8_t *out, const uint8_t *in, unsigned in_len)
     return in_len;
 }
 
+int icnl_ndn_decode_name(uint8_t *out, const uint8_t *in, unsigned *pos_in,
+                         uint8_t *a)
+{
+    unsigned pos_out = 0;
+    unsigned name_len = 0;
+    uint8_t out_total_name_len = 0;
+    uint8_t *name_length;
+
+    out[pos_out++] = ICNL_NDN_TLV_NAME;
+
+    name_len = in[(*pos_in)++];
+    name_length = out + (pos_out++);
+
+    if ((*a & 0xC0) == 0) {
+        memcpy(out + pos_out, in + *pos_in, name_len);
+        *pos_in += name_len;
+        pos_out += name_len;
+    }
+    else {
+        uint8_t component_type = 0x00;
+
+        if (*a & 0x40) {
+            component_type = ICNL_NDN_TLV_GENERIC_NAME_COMPONENT;
+        }
+        else if (*a & 0x80) {
+            component_type = ICNL_NDN_TLV_IMPLICIT_SHA256_DIGEST_COMPONENT;
+        }
+
+        unsigned offset = *pos_in + name_len;
+        while (*pos_in < offset) {
+            out[pos_out++] = component_type;
+            out_total_name_len += 1;
+            uint8_t comp_len = in[*pos_in] + 1;
+            memcpy(out + pos_out, in + *pos_in, comp_len);
+            pos_out += comp_len;
+            *pos_in += comp_len;
+            out_total_name_len += comp_len;
+        }
+        (*pos_in)++;
+    }
+
+    *name_length = out_total_name_len;
+
+    return pos_out;
+}
+
 int icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in, unsigned in_len)
 {
-    memcpy(out, in, in_len);
+    unsigned pos_out = 0;
+    unsigned pos_in = 0;
+    const uint8_t *a;
+    uint8_t *packet_length;
+    int res = 0;
 
-    return in_len;
+    a = in + (pos_in)++;
+
+    out[pos_out++] = ICNL_NDN_TLV_INTEREST;
+    packet_length = out + (pos_out++);
+
+    if ((res = icnl_ndn_decode_name(out + pos_out, in + pos_in, &pos_in, a)) < 0) {
+        return res;
+    }
+
+    pos_out += res;
+
+    memcpy(out + pos_out, in + pos_in, in_len - pos_in);
+    pos_out += in_len - pos_in;
+
+    *packet_length = pos_out - 2;
+
+    return pos_out;
 }
 
 int icnl_ndn_decode_data(uint8_t *out, const uint8_t *in, unsigned in_len)
@@ -189,28 +261,12 @@ int icnl_ndn_decode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
         }
     }
     else if (proto == ICNL_PROTO_NDN_HC) {
-        if (*dispatch == ICNL_DISPATCH_NDN_INT) {
+        if (*dispatch == ICNL_DISPATCH_NDN_INT_HC_A) {
             out_len = icnl_ndn_decode_interest_hc(out, in + pos, in_len - pos);
         }
-        else if (*dispatch == ICNL_DISPATCH_NDN_DATA) {
+        else if (*dispatch == ICNL_DISPATCH_NDN_DATA_HC_A) {
             out_len = icnl_ndn_decode_interest_hc(out, in + pos, in_len - pos);
         }
-    }
-
-    return out_len;
-}
-
-int icnl_ndn_decode_hc(uint8_t *out, const uint8_t *in, unsigned in_len)
-{
-    unsigned pos = 0;
-    unsigned out_len = 0;
-    uint8_t *dispatch = (uint8_t *) (in + pos++);
-
-    if (*dispatch == ICNL_DISPATCH_NDN_INT) {
-        out_len = icnl_ndn_decode_interest(out, in + pos, in_len - pos);
-    }
-    else if (*dispatch == ICNL_DISPATCH_NDN_DATA) {
-        out_len = icnl_ndn_decode_interest(out, in + pos, in_len - pos);
     }
 
     return out_len;
