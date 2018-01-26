@@ -129,7 +129,7 @@ int icnl_ndn_encode_interest_lifetime(uint8_t *out, const uint8_t *in,
                                       unsigned *pos_in, uint8_t *a)
 {
     unsigned pos_out = 0;
-    uint8_t *length;
+    const uint8_t *length;
 
     *a &= 0xF1;
 
@@ -148,9 +148,9 @@ int icnl_ndn_encode_interest_lifetime(uint8_t *out, const uint8_t *in,
         *a |= 0x02;
     }
     else if (*length == 2) {
-        uint16_t *val = in + *pos_in;
-        if (*val == 4000) {
-            *a |= 0x09;
+        uint8_t *val = in + *pos_in;
+        if ((val[0] == 0x0F) && (val[1] == 0xA0)) {
+            *a |= 0x0A;
             *pos_in += *length;
             return pos_out;
         }
@@ -254,7 +254,7 @@ int icnl_ndn_decode_interest(uint8_t *out, const uint8_t *in, unsigned in_len)
 }
 
 int icnl_ndn_decode_name(uint8_t *out, const uint8_t *in, unsigned *pos_in,
-                         uint8_t *a)
+                         const uint8_t *a)
 {
     unsigned pos_out = 0;
     unsigned name_len = 0;
@@ -299,7 +299,7 @@ int icnl_ndn_decode_name(uint8_t *out, const uint8_t *in, unsigned *pos_in,
 }
 
 int icnl_ndn_decode_nonce(uint8_t *out, const uint8_t *in, unsigned *pos_in,
-                          uint8_t *a)
+                          const uint8_t *a)
 {
     unsigned pos_out = 0;
     unsigned nonce_len = 4;
@@ -323,7 +323,7 @@ int icnl_ndn_decode_nonce(uint8_t *out, const uint8_t *in, unsigned *pos_in,
 }
 
 int icnl_ndn_decode_interest_lifetime(uint8_t *out, const uint8_t *in,
-                                      unsigned *pos_in, uint8_t *a)
+                                      unsigned *pos_in, const uint8_t *a)
 {
     unsigned pos_out = 0;
     uint8_t length = 0;
@@ -345,11 +345,11 @@ int icnl_ndn_decode_interest_lifetime(uint8_t *out, const uint8_t *in,
         else if ((*a & 0x0E) == 0x08) {
             length = 8;
         }
-        else if ((*a & 0x0E) == 0x09) {
+        else if ((*a & 0x0E) == 0x0A) {
             out[pos_out++] = 2;
             /* default value of 4000 ms */
-            out[pos_out++] = 0x03;
-            out[pos_out++] = 0xE8;
+            out[pos_out++] = 0x0F;
+            out[pos_out++] = 0xA0;
             return pos_out;
         }
 
