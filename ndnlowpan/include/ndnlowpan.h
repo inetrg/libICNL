@@ -60,6 +60,8 @@ typedef enum {
     ICNL_NDN_TLV_DATA                             = 0x06,   /**< NDN Data */
     ICNL_NDN_TLV_NAME                             = 0x07,   /**< NDN Name */
     ICNL_NDN_TLV_GENERIC_NAME_COMPONENT           = 0x08,   /**< NDN GenericNameComponent */
+    ICNL_NDN_TLV_NONCE                            = 0x0A,   /**< NDN Nonce */
+    ICNL_NDN_TLV_INTEREST_LIFETIME                = 0x0C,   /**< NDN InterestLifetime */
 } icnl_ndn_tlv_t;
 /** @} */
 
