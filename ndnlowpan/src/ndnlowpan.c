@@ -131,7 +131,7 @@ int icnl_ndn_encode_interest_lifetime(uint8_t *out, const uint8_t *in,
     unsigned pos_out = 0;
     uint8_t *length;
 
-    *a &= 0xF3;
+    *a &= 0xF1;
 
     if (in[*pos_in] != ICNL_NDN_TLV_INTEREST_LIFETIME) {
         ICNL_DBG("error while encoding interest lifetime: expected 0x%x, got 0x%x\n",
@@ -143,9 +143,27 @@ int icnl_ndn_encode_interest_lifetime(uint8_t *out, const uint8_t *in,
     (*pos_in)++;
 
     length = in + (*pos_in)++;
-    out[pos_out++] = *length;
 
-    *a |= 0x04;
+    if (*length == 1) {
+        *a |= 0x02;
+    }
+    else if (*length == 2) {
+        uint16_t *val = in + *pos_in;
+        if (*val == 4000) {
+            *a |= 0x09;
+            *pos_in += *length;
+            return pos_out;
+        }
+        else {
+            *a |= 0x04;
+        }
+    }
+    else if (*length == 4) {
+        *a |= 0x06;
+    }
+    else if (*length == 8) {
+        *a |= 0x08;
+    }
 
     memcpy(out + pos_out, in + *pos_in, *length);
     pos_out += *length;
@@ -308,15 +326,37 @@ int icnl_ndn_decode_interest_lifetime(uint8_t *out, const uint8_t *in,
                                       unsigned *pos_in, uint8_t *a)
 {
     unsigned pos_out = 0;
-    uint8_t *length;
+    uint8_t length = 0;
 
-    if ((*a & 0x0C) == 0x04) {
+    if ((*a & 0x0E) == 0x00) {
+        return pos_out;
+    }
+    else {
         out[pos_out++] = ICNL_NDN_TLV_INTEREST_LIFETIME;
-        length = in + (*pos_in)++;
-        out[pos_out++] = *length;
-        memcpy(out + pos_out, in + *pos_in, *length);
-        *pos_in += *length;
-        pos_out += *length;
+        if ((*a & 0x0E) == 0x02) {
+            length = 1;
+        }
+        else if ((*a & 0x0E) == 0x04) {
+            length = 2;
+        }
+        else if ((*a & 0x0E) == 0x06) {
+            length = 4;
+        }
+        else if ((*a & 0x0E) == 0x08) {
+            length = 8;
+        }
+        else if ((*a & 0x0E) == 0x09) {
+            out[pos_out++] = 2;
+            /* default value of 4000 ms */
+            out[pos_out++] = 0x03;
+            out[pos_out++] = 0xE8;
+            return pos_out;
+        }
+
+        out[pos_out++] = length;
+        memcpy(out + pos_out, in + *pos_in, length);
+        *pos_in += length;
+        pos_out += length;
     }
 
     return pos_out;
