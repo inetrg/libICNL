@@ -138,7 +138,8 @@ int icnl_ndn_encode_signature_info(uint8_t *out, const uint8_t *in,
 {
     unsigned pos_out = 0;
     unsigned signaturetype;
-    unsigned length = in[(*pos_in)] + 1;
+    unsigned value_length = in[*pos_in];
+    unsigned length = value_length + 1;
     unsigned offset = (*pos_in) + 1;
     unsigned type;
 
@@ -152,20 +153,23 @@ int icnl_ndn_encode_signature_info(uint8_t *out, const uint8_t *in,
         return -1;
     }
 
-    /* skip signaturetype length */
-    offset++;
+    signaturetype = in[offset + 1];
 
-    signaturetype = in[offset++];
-
-    if (signaturetype == ICNL_NDN_SIGNATURE_TYPE_DIGEST_SHA256) {
+    if ((signaturetype == ICNL_NDN_SIGNATURE_TYPE_DIGEST_SHA256) && (value_length == 3)) {
         *a |= 0x08;
         *pos_in += length;
         return pos_out;
     }
-
-    memcpy(out + pos_out, in + *pos_in, length);
-    pos_out += length;
-    *pos_in += length;
+    else {
+        /* sig info length minus sigtype type */
+        unsigned tmp = in[(*pos_in)++] - 1;
+        out[pos_out++] = tmp;
+        /* skip sigtype type */
+        (*pos_in)++;
+        memcpy(out + pos_out, in + *pos_in, tmp);
+        pos_out += tmp;
+        *pos_in += tmp;
+    }
 
     return pos_out;
 }
