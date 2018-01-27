@@ -62,7 +62,21 @@ typedef enum {
     ICNL_NDN_TLV_GENERIC_NAME_COMPONENT           = 0x08,   /**< NDN GenericNameComponent */
     ICNL_NDN_TLV_NONCE                            = 0x0A,   /**< NDN Nonce */
     ICNL_NDN_TLV_INTEREST_LIFETIME                = 0x0C,   /**< NDN InterestLifetime */
+    ICNL_NDN_TLV_META_INFO                        = 0x14,   /**< NDN MetaInfo */
+    ICNL_NDN_TLV_CONTENT                          = 0x15,   /**< NDN Content */
+    ICNL_NDN_TLV_SIGNATURE_INFO                   = 0x16,   /**< NDN SignatureInfo */
+    ICNL_NDN_TLV_SIGNATURE_VALUE                  = 0x17,   /**< NDN SignatureValue */
+    ICNL_NDN_TLV_SIGNATURE_TYPE                   = 0x1b,   /**< NDN SignatureType */
 } icnl_ndn_tlv_t;
+/** @} */
+
+/**
+ * @brief   NDN Signature Types
+ * @{
+ */
+typedef enum {
+    ICNL_NDN_SIGNATURE_TYPE_DIGEST_SHA256   = 0x00,   /**< NDN SignatureType DigestSha256 */
+} icnl_ndn_sigtype_t;
 /** @} */
 
 /**

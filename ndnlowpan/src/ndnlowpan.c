@@ -107,6 +107,85 @@ int icnl_ndn_encode_nonce(uint8_t *out, const uint8_t *in, unsigned *pos_in,
     return pos_out;
 }
 
+int icnl_ndn_encode_meta_info(uint8_t *out, const uint8_t *in, unsigned *pos_in,
+                              uint8_t *a)
+{
+    unsigned pos_out = 0;
+    unsigned length = in[(*pos_in)++];
+
+    memcpy(out + pos_out, in + *pos_in, length);
+    pos_out += length;
+    *pos_in += length;
+
+    return pos_out;
+}
+
+int icnl_ndn_encode_content(uint8_t *out, const uint8_t *in, unsigned *pos_in,
+                            uint8_t *a)
+{
+    unsigned pos_out = 0;
+    unsigned length = in[(*pos_in)] + 1;
+
+    memcpy(out + pos_out, in + *pos_in, length);
+    pos_out += length;
+    *pos_in += length;
+
+    return pos_out;
+}
+
+int icnl_ndn_encode_signature_info(uint8_t *out, const uint8_t *in,
+                                   unsigned *pos_in, uint8_t *a)
+{
+    unsigned pos_out = 0;
+    unsigned signaturetype;
+    unsigned length = in[(*pos_in)] + 1;
+    unsigned offset = (*pos_in) + 1;
+    unsigned type;
+
+    *a &= 0xC7;
+
+    /* check signaturetype type */
+    type = in[offset++];
+    if (type != ICNL_NDN_TLV_SIGNATURE_TYPE) {
+        ICNL_DBG("error while encoding signature info: exptected 0x%x, got 0x%x\n",
+                 ICNL_NDN_TLV_SIGNATURE_TYPE, type);
+        return -1;
+    }
+
+    /* skip signaturetype length */
+    offset++;
+
+    signaturetype = in[offset++];
+
+    if (signaturetype == ICNL_NDN_SIGNATURE_TYPE_DIGEST_SHA256) {
+        *a |= 0x08;
+        *pos_in += length;
+        return pos_out;
+    }
+
+    memcpy(out + pos_out, in + *pos_in, length);
+    pos_out += length;
+    *pos_in += length;
+
+    return pos_out;
+}
+
+int icnl_ndn_encode_signature_value(uint8_t *out, const uint8_t *in,
+                                    unsigned *pos_in, uint8_t *a)
+{
+    unsigned pos_out = 0;
+    unsigned length = in[(*pos_in)] + 1;
+
+    if ((*a & 0x38) == 0x08) {
+        length = in[(*pos_in)++];
+    }
+    memcpy(out + pos_out, in + *pos_in, length);
+    pos_out += length;
+    *pos_in += length;
+
+    return pos_out;
+}
+
 int icnl_ndn_encode_interest_lifetime(uint8_t *out, const uint8_t *in,
                                       unsigned *pos_in, uint8_t *a)
 {
@@ -173,27 +252,83 @@ int icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in, unsigned in_len
 
         switch (type) {
             case ICNL_NDN_TLV_NAME:
-                if ((res = icnl_ndn_encode_name(out + pos_out, in, &pos_in, a)) < 0) {
-                    return res;
-                }
-                pos_out += res;
+                res = icnl_ndn_encode_name(out + pos_out, in, &pos_in, a);
                 break;
             case ICNL_NDN_TLV_NONCE:
-                if ((res = icnl_ndn_encode_nonce(out + pos_out, in, &pos_in, a)) < 0) {
-                    return res;
-                }
-                pos_out += res;
+                res = icnl_ndn_encode_nonce(out + pos_out, in, &pos_in, a);
                 break;
             case ICNL_NDN_TLV_INTEREST_LIFETIME:
-                if ((res = icnl_ndn_encode_interest_lifetime(out + pos_out, in, &pos_in, a)) < 0) {
-                    return res;
-                }
-                pos_out += res;
+                res = icnl_ndn_encode_interest_lifetime(out + pos_out, in, &pos_in, a);
                 break;
             default:
-                ICNL_DBG("error while encoding unknown TLV with type 0x%x\n", type);
+                ICNL_DBG("error while encoding unknown Interest TLV with type 0x%x\n", type);
                 return -1;
         }
+
+        if (res < 0) {
+            return res;
+        }
+
+        pos_out += res;
+    }
+
+    *out_packet_length = pos_out - 3;
+
+    return pos_out;
+}
+
+int icnl_ndn_encode_data_hc(uint8_t *out, const uint8_t *in, unsigned in_len)
+{
+    unsigned pos_out = 0;
+    unsigned pos_in = 0;
+    uint8_t *a;
+    uint8_t *out_packet_length;
+    unsigned type;
+    int res = 0;
+
+    out[pos_out++] = ICNL_DISPATCH_NDN_DATA_HC_A;
+
+    a = out + (pos_out++);
+    *a = 0x00;
+
+    /* skip packet type */
+    pos_in++;
+
+    /* remember position of packet length */
+    out_packet_length = out + (pos_out++);
+
+    /* skip packet length */
+    pos_in++;
+
+    while (pos_in < in_len) {
+        unsigned type = in[pos_in++];
+
+        switch (type) {
+            case ICNL_NDN_TLV_NAME:
+                res = icnl_ndn_encode_name(out + pos_out, in, &pos_in, a);
+                break;
+            case ICNL_NDN_TLV_META_INFO:
+                res = icnl_ndn_encode_meta_info(out + pos_out, in, &pos_in, a);
+                break;
+            case ICNL_NDN_TLV_CONTENT:
+                res = icnl_ndn_encode_content(out + pos_out, in, &pos_in, a);
+                break;
+            case ICNL_NDN_TLV_SIGNATURE_INFO:
+                res = icnl_ndn_encode_signature_info(out + pos_out, in, &pos_in, a);
+                break;
+            case ICNL_NDN_TLV_SIGNATURE_VALUE:
+                res = icnl_ndn_encode_signature_value(out + pos_out, in, &pos_in, a);
+                break;
+            default:
+                ICNL_DBG("error while encoding unknown Data TLV with type 0x%x\n", type);
+                return -1;
+        }
+
+        if (res < 0) {
+            return res;
+        }
+
+        pos_out += res;
     }
 
     *out_packet_length = pos_out - 3;
@@ -219,7 +354,7 @@ int icnl_ndn_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
             pos += icnl_ndn_encode_interest_hc(out, in, in_len);
         }
         else if (in[0] == 0x06) {
-            pos += icnl_ndn_encode_data(out, in, in_len);
+            pos += icnl_ndn_encode_data_hc(out, in, in_len);
         }
     }
 
