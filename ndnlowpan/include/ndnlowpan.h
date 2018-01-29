@@ -33,19 +33,19 @@
 #define ICNL_DISPATCH_NDN_DATA      (0x90)
 
 /**
- * @brief   Dispatch type for NDN Interest with header compression.
+ * @brief   Dispatch type for NDN Interest with header compression
  *          A octet follows.
  */
 #define ICNL_DISPATCH_NDN_INT_HC_A  (0x88)
 
 /**
- * @brief   Dispatch type for NDN Interest with header compression.
+ * @brief   Dispatch type for NDN Interest with header compression
  *          A and B octet follows.
  */
 #define ICNL_DISPATCH_NDN_INT_HC_AB (0x89)
 
 /**
- * @brief   Dispatch type for NDN Data with header compression.
+ * @brief   Dispatch type for NDN Data with header compression
  *          A octet follows.
  */
 #define ICNL_DISPATCH_NDN_DATA_HC_A (0x98)
@@ -69,6 +69,19 @@ typedef enum {
     ICNL_NDN_TLV_SIGNATURE_TYPE                   = 0x1b,   /**< NDN SignatureType */
 } icnl_ndn_tlv_t;
 /** @} */
+
+/**
+ * @brief Reads the Type or Length field of a TLV
+ *
+ * @param[in]       in      input buffer to read the Type or Length field from
+ * @param[in,out]   pos_in  current position within the input buffer @p in
+ *
+ * @post            @p pos_in is forwarded to the position after the Type
+ *                  or Length field
+ *
+ * @return          The Type or Length field
+ */
+uint64_t icnl_ndn_tlv_read(const uint8_t *in, unsigned *pos_in);
 
 /**
  * @brief   NDN Signature Types

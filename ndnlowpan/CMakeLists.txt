@@ -1,6 +1,7 @@
 add_static_library(ndnlowpan)
 
 target_sources(ndnlowpan PRIVATE
+               "${CMAKE_CURRENT_SOURCE_DIR}/src/ndnlowpan_util.c"
                "${CMAKE_CURRENT_SOURCE_DIR}/src/ndnlowpan_encode.c"
                "${CMAKE_CURRENT_SOURCE_DIR}/src/ndnlowpan_decode.c")
 target_include_directories(ndnlowpan PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/"
