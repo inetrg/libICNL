@@ -92,7 +92,7 @@ void test_encode_ndn(void)
 
 void test_encode_ndn_int_hc_01(void)
 {
-    uint8_t out_int[sizeof(ndn_int_01) / sizeof(ndn_int_01[0]) + 2];
+    uint8_t out_int[sizeof(ndn_int_01) / sizeof(ndn_int_01[0]) + 16];
 
     unsigned pos_int = icnl_encode(out_int, ICNL_PROTO_NDN_HC, (uint8_t *)ndn_int_01,
                                    sizeof(ndn_int_01)/sizeof(ndn_int_01[0]));
@@ -103,7 +103,7 @@ void test_encode_ndn_int_hc_01(void)
 
 void test_encode_ndn_int_hc_02(void)
 {
-    uint8_t out_int[sizeof(ndn_int_02) / sizeof(ndn_int_02[0]) + 2];
+    uint8_t out_int[sizeof(ndn_int_02) / sizeof(ndn_int_02[0]) + 16];
 
     unsigned pos_int = icnl_encode(out_int, ICNL_PROTO_NDN_HC, (uint8_t *)ndn_int_02,
                                    sizeof(ndn_int_02)/sizeof(ndn_int_02[0]));
@@ -114,7 +114,7 @@ void test_encode_ndn_int_hc_02(void)
 
 void test_encode_ndn_data_hc_01(void)
 {
-    uint8_t out_data[sizeof(ndn_data_01) / sizeof(ndn_data_01[0]) + 2];
+    uint8_t out_data[sizeof(ndn_data_01) / sizeof(ndn_data_01[0]) + 16];
 
     unsigned pos_data = icnl_encode(out_data, ICNL_PROTO_NDN_HC, (uint8_t *)ndn_data_01,
                                     sizeof(ndn_data_01)/sizeof(ndn_data_01[0]));
@@ -125,7 +125,7 @@ void test_encode_ndn_data_hc_01(void)
 
 void test_encode_ndn_data_hc_02(void)
 {
-    uint8_t out_data[sizeof(ndn_data_02) / sizeof(ndn_data_02[0]) + 2];
+    uint8_t out_data[sizeof(ndn_data_02) / sizeof(ndn_data_02[0]) + 16];
 
     unsigned pos_data = icnl_encode(out_data, ICNL_PROTO_NDN_HC, (uint8_t *)ndn_data_02,
                                     sizeof(ndn_data_02)/sizeof(ndn_data_02[0]));

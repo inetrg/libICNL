@@ -84,6 +84,17 @@ typedef enum {
 uint64_t icnl_ndn_tlv_read(const uint8_t *in, unsigned *pos_in);
 
 /**
+ * @brief Writes the Type or Length field of a TLV
+ *
+ * @param[out]      out     output buffer to write the Type or Length field to
+ * @param[in,out]   pos_out current position within the output buffer @p out
+ *
+ * @post            @p pos_out is forwarded to the position after the Type
+ *                  or Length field
+ */
+void icnl_ndn_tlv_write(uint64_t val, uint8_t *out, unsigned *pos_out);
+
+/**
  * @brief   NDN Signature Types
  * @{
  */

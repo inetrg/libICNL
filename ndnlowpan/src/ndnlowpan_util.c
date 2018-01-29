@@ -48,9 +48,7 @@ uint64_t icnl_ndn_tlv_read(const uint8_t *in, unsigned *pos_in)
 
 void icnl_ndn_tlv_write(uint64_t val, uint8_t *out, unsigned *pos_out)
 {
-    uint8_t tmp = val & 0xFF;
-
-    if (val & 0x00000000FFFFFFFFULL) {
+    if (val & 0xFFFFFFFF00000000ULL) {
         out[(*pos_out)++] = 255;
         out[(*pos_out)++] = (uint8_t) ((val >> 56) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >> 48) & 0xFF);
@@ -61,14 +59,14 @@ void icnl_ndn_tlv_write(uint64_t val, uint8_t *out, unsigned *pos_out)
         out[(*pos_out)++] = (uint8_t) ((val >>  8) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
     }
-    else if (val & 0x0000FFFFFFFFFFFFULL) {
+    else if (val & 0xFFFFFFFFFFFF0000ULL) {
         out[(*pos_out)++] = 254;
         out[(*pos_out)++] = (uint8_t) ((val >> 24) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >> 16) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >>  8) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
     }
-    else if (val & 0x00FFFFFFFFFFFFFFULL) {
+    else if (val & 0xFFFFFFFFFFFFFF00ULL) {
         out[(*pos_out)++] = 253;
         out[(*pos_out)++] = (uint8_t) ((val >>  8) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
