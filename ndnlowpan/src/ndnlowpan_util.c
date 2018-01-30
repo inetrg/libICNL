@@ -13,8 +13,8 @@
 
 icnl_tlv_off_t icnl_ndn_tlv_read(const uint8_t *in, icnl_tlv_off_t *pos_in)
 {
-    icnl_tlv_off_t val;
     uint8_t tmp = in[(*pos_in)++];
+    icnl_tlv_off_t val = 0;
 
     if (tmp < 253) {
         val = (icnl_tlv_off_t) tmp;
@@ -24,14 +24,14 @@ icnl_tlv_off_t icnl_ndn_tlv_read(const uint8_t *in, icnl_tlv_off_t *pos_in)
         val |= ((icnl_tlv_off_t) (in[(*pos_in) + 1])) <<  0;
         *pos_in += 2;
     }
-    else if (in[*pos_in] == 254) {
+    else if (tmp == 254) {
         val  = ((icnl_tlv_off_t ) (in[(*pos_in) + 0])) << 24;
         val |= ((icnl_tlv_off_t) (in[(*pos_in) + 1])) << 16;
         val |= ((icnl_tlv_off_t) (in[(*pos_in) + 2])) <<  8;
         val |= ((icnl_tlv_off_t) (in[(*pos_in) + 3])) <<  0;
         *pos_in += 4;
     }
-    else if (in[*pos_in] == 255) {
+    else if (tmp == 255) {
         val  = ((icnl_tlv_off_t) (in[(*pos_in) + 0])) << 56;
         val |= ((icnl_tlv_off_t) (in[(*pos_in) + 1])) << 48;
         val |= ((icnl_tlv_off_t) (in[(*pos_in) + 2])) << 40;
