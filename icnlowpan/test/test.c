@@ -160,7 +160,7 @@ void test_decode_ndn(void)
 
 void test_decode_ndn_hc_01(void)
 {
-    uint8_t out_int[sizeof(ndn_int_01) / sizeof(ndn_int_01[0]) + 2];
+    uint8_t out_int[sizeof(ndn_int_01) / sizeof(ndn_int_01[0]) + 16];
 
     icnl_tlv_off_t pos_int = icnl_decode(out_int, (uint8_t *)ndn_int_hc_01,
                                          sizeof(ndn_int_hc_01)/sizeof(ndn_int_hc_01[0]));
@@ -171,7 +171,7 @@ void test_decode_ndn_hc_01(void)
 
 void test_decode_ndn_hc_02(void)
 {
-    uint8_t out_int[sizeof(ndn_int_02) / sizeof(ndn_int_02[0]) + 2];
+    uint8_t out_int[sizeof(ndn_int_02) / sizeof(ndn_int_02[0]) + 16];
 
     icnl_tlv_off_t pos_int = icnl_decode(out_int, (uint8_t *)ndn_int_hc_02,
                                          sizeof(ndn_int_hc_02)/sizeof(ndn_int_hc_02[0]));
