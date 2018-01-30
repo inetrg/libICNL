@@ -118,6 +118,8 @@ icnl_tlv_off_t icnl_ndn_encode_nonce(uint8_t *out, const uint8_t *in, icnl_tlv_o
 icnl_tlv_off_t icnl_ndn_encode_meta_info(uint8_t *out, const uint8_t *in, icnl_tlv_off_t *pos_in,
                                          uint8_t *a)
 {
+    (void) a;
+
     icnl_tlv_off_t pos_out = 0;
     icnl_tlv_off_t length = icnl_ndn_tlv_read(in, pos_in);
 
@@ -131,6 +133,8 @@ icnl_tlv_off_t icnl_ndn_encode_meta_info(uint8_t *out, const uint8_t *in, icnl_t
 icnl_tlv_off_t icnl_ndn_encode_content(uint8_t *out, const uint8_t *in, icnl_tlv_off_t *pos_in,
                                        uint8_t *a)
 {
+    (void) a;
+
     icnl_tlv_off_t pos_out = 0, tmp = *pos_in;
     icnl_tlv_off_t length = icnl_ndn_tlv_read(in, pos_in) + ((*pos_in) - tmp);
     *pos_in = tmp;
@@ -155,8 +159,8 @@ icnl_tlv_off_t icnl_ndn_encode_signature_info(uint8_t *out, const uint8_t *in,
     type = icnl_ndn_tlv_read(in, &offset);
 
     if (type != ICNL_NDN_TLV_SIGNATURE_TYPE) {
-        ICNL_DBG("error while encoding signature info: exptected 0x%x, got 0x%x\n",
-                 ICNL_NDN_TLV_SIGNATURE_TYPE, type);
+        ICNL_DBG("error while encoding signature info: exptected 0x%x\n",
+                 ICNL_NDN_TLV_SIGNATURE_TYPE);
         return 0;
     }
 
@@ -279,7 +283,7 @@ icnl_tlv_off_t icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in,
                 res = icnl_ndn_encode_interest_lifetime(out + pos_out, in, &pos_in, a);
                 break;
             default:
-                ICNL_DBG("error while encoding unknown Interest TLV with type 0x%x\n", type);
+                ICNL_DBG("error while encoding unknown Interest TLV\n");
                 return 0;
         }
 
@@ -336,7 +340,7 @@ icnl_tlv_off_t icnl_ndn_encode_data_hc(uint8_t *out, const uint8_t *in,
                 res = icnl_ndn_encode_signature_value(out + pos_out, in, &pos_in, a);
                 break;
             default:
-                ICNL_DBG("error while encoding unknown Data TLV with type 0x%x\n", type);
+                ICNL_DBG("error while encoding unknown Data TLV\n");
                 return 0;
         }
 
