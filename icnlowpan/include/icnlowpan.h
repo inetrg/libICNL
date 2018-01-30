@@ -24,6 +24,22 @@
  */
 #define ICNL_DISPATCH_PAGE (0xF2)
 
+#ifndef ICNL_OPT_OFFSET
+/**
+ * @brief Size of the TLV offset type @p icnl_tlv_off_t
+ */
+#define ICNL_OPT_OFFSET     (64)
+#endif
+
+/**
+ * @brief Size of the offset type
+ */
+#if ICNL_OPT_OFFSET == 64
+typedef uint64_t icnl_tlv_off_t;
+#elif ICNL_OPT_OFFSET == 32
+typedef uint32_t icnl_tlv_off_t;
+#endif
+
 /**
  * @brief       ICN protocol identifier
  * @{
@@ -49,10 +65,10 @@ typedef enum {
  * @param[in]   in_len  length of the input buffer @p in
  *
  * @return      Number of bytes written to @p out
- * @retval      -1 on error
+ * @retval      0 on error
  */
-int icnl_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
-                unsigned in_len);
+icnl_tlv_off_t icnl_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
+                           icnl_tlv_off_t in_len);
 
 /**
  * @brief       Decodes a packet
@@ -62,9 +78,9 @@ int icnl_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
  * @param[in]   in_len  length of the input buffer @p in
  *
  * @return      Number of bytes written to @p out
- * @retval      -1 on error
+ * @retval      0 on error
  */
-int icnl_decode(uint8_t *out, const uint8_t *in, unsigned in_len);
+icnl_tlv_off_t icnl_decode(uint8_t *out, const uint8_t *in, icnl_tlv_off_t in_len);
  
 #endif /* ICNLOWPAN_H */
 /** @} */

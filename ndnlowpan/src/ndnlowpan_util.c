@@ -11,44 +11,46 @@
 
 #include "ndnlowpan.h"
 
-uint64_t icnl_ndn_tlv_read(const uint8_t *in, unsigned *pos_in)
+icnl_tlv_off_t icnl_ndn_tlv_read(const uint8_t *in, icnl_tlv_off_t *pos_in)
 {
-    uint64_t val;
+    icnl_tlv_off_t val;
     uint8_t tmp = in[(*pos_in)++];
 
     if (tmp < 253) {
-        val = (uint64_t) tmp;
+        val = (icnl_tlv_off_t) tmp;
     }
     else if (tmp == 253) {
-        val  = ((uint64_t) (in[(*pos_in) + 0])) <<  8;
-        val |= ((uint64_t) (in[(*pos_in) + 1])) <<  0;
+        val  = ((icnl_tlv_off_t) (in[(*pos_in) + 0])) <<  8;
+        val |= ((icnl_tlv_off_t) (in[(*pos_in) + 1])) <<  0;
         *pos_in += 2;
     }
     else if (in[*pos_in] == 254) {
-        val  = ((uint64_t) (in[(*pos_in) + 0])) << 24;
-        val |= ((uint64_t) (in[(*pos_in) + 1])) << 16;
-        val |= ((uint64_t) (in[(*pos_in) + 2])) <<  8;
-        val |= ((uint64_t) (in[(*pos_in) + 3])) <<  0;
+        val  = ((icnl_tlv_off_t ) (in[(*pos_in) + 0])) << 24;
+        val |= ((icnl_tlv_off_t) (in[(*pos_in) + 1])) << 16;
+        val |= ((icnl_tlv_off_t) (in[(*pos_in) + 2])) <<  8;
+        val |= ((icnl_tlv_off_t) (in[(*pos_in) + 3])) <<  0;
         *pos_in += 4;
     }
     else if (in[*pos_in] == 255) {
-        val  = ((uint64_t) (in[(*pos_in) + 0])) << 56;
-        val |= ((uint64_t) (in[(*pos_in) + 1])) << 48;
-        val |= ((uint64_t) (in[(*pos_in) + 2])) << 40;
-        val |= ((uint64_t) (in[(*pos_in) + 3])) << 32;
-        val |= ((uint64_t) (in[(*pos_in) + 4])) << 24;
-        val |= ((uint64_t) (in[(*pos_in) + 5])) << 16;
-        val |= ((uint64_t) (in[(*pos_in) + 6])) <<  8;
-        val |= ((uint64_t) (in[(*pos_in) + 7])) <<  0;
+        val  = ((icnl_tlv_off_t) (in[(*pos_in) + 0])) << 56;
+        val |= ((icnl_tlv_off_t) (in[(*pos_in) + 1])) << 48;
+        val |= ((icnl_tlv_off_t) (in[(*pos_in) + 2])) << 40;
+        val |= ((icnl_tlv_off_t) (in[(*pos_in) + 3])) << 32;
+        val |= ((icnl_tlv_off_t) (in[(*pos_in) + 4])) << 24;
+        val |= ((icnl_tlv_off_t) (in[(*pos_in) + 5])) << 16;
+        val |= ((icnl_tlv_off_t) (in[(*pos_in) + 6])) <<  8;
+        val |= ((icnl_tlv_off_t) (in[(*pos_in) + 7])) <<  0;
         *pos_in += 8;
     }
 
     return val;
 }
 
-void icnl_ndn_tlv_write(uint64_t val, uint8_t *out, unsigned *pos_out)
+void icnl_ndn_tlv_write(icnl_tlv_off_t val, uint8_t *out, icnl_tlv_off_t *pos_out)
 {
-    if (val & 0xFFFFFFFF00000000ULL) {
+    if (0) {}
+#if ICNL_OPT_OFFSET == 64
+    else if (val & (((icnl_tlv_off_t) -1) << 32)) {
         out[(*pos_out)++] = 255;
         out[(*pos_out)++] = (uint8_t) ((val >> 56) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >> 48) & 0xFF);
@@ -59,14 +61,15 @@ void icnl_ndn_tlv_write(uint64_t val, uint8_t *out, unsigned *pos_out)
         out[(*pos_out)++] = (uint8_t) ((val >>  8) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
     }
-    else if (val & 0xFFFFFFFFFFFF0000ULL) {
+#endif
+    else if (val & (((icnl_tlv_off_t) -1) << 16)) {
         out[(*pos_out)++] = 254;
         out[(*pos_out)++] = (uint8_t) ((val >> 24) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >> 16) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >>  8) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
     }
-    else if (val & 0xFFFFFFFFFFFFFF00ULL) {
+    else if (val & (((icnl_tlv_off_t) -1) << 8)) {
         out[(*pos_out)++] = 253;
         out[(*pos_out)++] = (uint8_t) ((val >>  8) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);

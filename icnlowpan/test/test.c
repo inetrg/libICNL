@@ -77,14 +77,16 @@ void test_encode_ndn(void)
     uint8_t out_int[sizeof(ndn_int_01) / sizeof(ndn_int_01[0]) + 2];
     uint8_t out_data[sizeof(ndn_data_01) / sizeof(ndn_data_01[0]) + 2];
 
-    unsigned pos_int = icnl_encode(out_int, ICNL_PROTO_NDN, (uint8_t *)ndn_int_01,
-                                   sizeof(ndn_int_01)/sizeof(ndn_int_01[0]));
+    icnl_tlv_off_t pos_int = icnl_encode(out_int, ICNL_PROTO_NDN,
+                                         (uint8_t *)ndn_int_01,
+                                         sizeof(ndn_int_01)/sizeof(ndn_int_01[0]));
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int_01)/sizeof(ndn_int_01[0]) + 2, pos_int);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int_01, out_int + 2, pos_int - 2);
 
-    unsigned pos_data = icnl_encode(out_data, ICNL_PROTO_NDN, (uint8_t *)ndn_data_01,
-                                    sizeof(ndn_data_01)/sizeof(ndn_data_01[0]));
+    icnl_tlv_off_t pos_data = icnl_encode(out_data, ICNL_PROTO_NDN,
+                                          (uint8_t *)ndn_data_01,
+                                          sizeof(ndn_data_01)/sizeof(ndn_data_01[0]));
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data_01)/sizeof(ndn_data_01[0]) + 2, pos_data);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data_01, out_data + 2, pos_data - 2);
@@ -94,8 +96,9 @@ void test_encode_ndn_int_hc_01(void)
 {
     uint8_t out_int[sizeof(ndn_int_01) / sizeof(ndn_int_01[0]) + 16];
 
-    unsigned pos_int = icnl_encode(out_int, ICNL_PROTO_NDN_HC, (uint8_t *)ndn_int_01,
-                                   sizeof(ndn_int_01)/sizeof(ndn_int_01[0]));
+    icnl_tlv_off_t pos_int = icnl_encode(out_int, ICNL_PROTO_NDN_HC,
+                                         (uint8_t *)ndn_int_01,
+                                         sizeof(ndn_int_01)/sizeof(ndn_int_01[0]));
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int_hc_01)/sizeof(ndn_int_hc_01[0]), pos_int);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int_hc_01, out_int, pos_int);
@@ -105,8 +108,9 @@ void test_encode_ndn_int_hc_02(void)
 {
     uint8_t out_int[sizeof(ndn_int_02) / sizeof(ndn_int_02[0]) + 16];
 
-    unsigned pos_int = icnl_encode(out_int, ICNL_PROTO_NDN_HC, (uint8_t *)ndn_int_02,
-                                   sizeof(ndn_int_02)/sizeof(ndn_int_02[0]));
+    icnl_tlv_off_t pos_int = icnl_encode(out_int, ICNL_PROTO_NDN_HC,
+                                         (uint8_t *)ndn_int_02,
+                                         sizeof(ndn_int_02)/sizeof(ndn_int_02[0]));
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int_hc_02)/sizeof(ndn_int_hc_02[0]), pos_int);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int_hc_02, out_int, pos_int);
@@ -116,8 +120,9 @@ void test_encode_ndn_data_hc_01(void)
 {
     uint8_t out_data[sizeof(ndn_data_01) / sizeof(ndn_data_01[0]) + 16];
 
-    unsigned pos_data = icnl_encode(out_data, ICNL_PROTO_NDN_HC, (uint8_t *)ndn_data_01,
-                                    sizeof(ndn_data_01)/sizeof(ndn_data_01[0]));
+    icnl_tlv_off_t pos_data = icnl_encode(out_data, ICNL_PROTO_NDN_HC,
+                                          (uint8_t *)ndn_data_01,
+                                          sizeof(ndn_data_01)/sizeof(ndn_data_01[0]));
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data_hc_01)/sizeof(ndn_data_hc_01[0]), pos_data);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data_hc_01, out_data, pos_data);
@@ -127,8 +132,9 @@ void test_encode_ndn_data_hc_02(void)
 {
     uint8_t out_data[sizeof(ndn_data_02) / sizeof(ndn_data_02[0]) + 16];
 
-    unsigned pos_data = icnl_encode(out_data, ICNL_PROTO_NDN_HC, (uint8_t *)ndn_data_02,
-                                    sizeof(ndn_data_02)/sizeof(ndn_data_02[0]));
+    icnl_tlv_off_t pos_data = icnl_encode(out_data, ICNL_PROTO_NDN_HC,
+                                          (uint8_t *)ndn_data_02,
+                                          sizeof(ndn_data_02)/sizeof(ndn_data_02[0]));
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data_hc_02)/sizeof(ndn_data_hc_02[0]), pos_data);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data_hc_02, out_data, pos_data);
@@ -139,14 +145,14 @@ void test_decode_ndn(void)
     uint8_t out_int[sizeof(ndn_int_01)/sizeof(ndn_int_01[0])];
     uint8_t out_data[sizeof(ndn_data_01)/sizeof(ndn_data_01[0])];
 
-    unsigned pos_int = icnl_decode(out_int, (uint8_t *)ndn_int_disp_01,
-                                   sizeof(ndn_int_disp_01)/sizeof(ndn_int_disp_01[0]));
+    icnl_tlv_off_t pos_int = icnl_decode(out_int, (uint8_t *)ndn_int_disp_01,
+                                         sizeof(ndn_int_disp_01)/sizeof(ndn_int_disp_01[0]));
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int_01)/sizeof(ndn_int_01[0]), pos_int);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int_01, out_int, pos_int);
 
-    unsigned pos_data = icnl_decode(out_data, (uint8_t *)ndn_data_disp_01,
-                                    sizeof(ndn_data_disp_01)/sizeof(ndn_data_disp_01[0]));
+    icnl_tlv_off_t pos_data = icnl_decode(out_data, (uint8_t *)ndn_data_disp_01,
+                                          sizeof(ndn_data_disp_01)/sizeof(ndn_data_disp_01[0]));
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data_01)/sizeof(ndn_data_01[0]), pos_data);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data_01, out_data, pos_data);
@@ -156,8 +162,8 @@ void test_decode_ndn_hc_01(void)
 {
     uint8_t out_int[sizeof(ndn_int_01) / sizeof(ndn_int_01[0]) + 2];
 
-    unsigned pos_int = icnl_decode(out_int, (uint8_t *)ndn_int_hc_01,
-                                   sizeof(ndn_int_hc_01)/sizeof(ndn_int_hc_01[0]));
+    icnl_tlv_off_t pos_int = icnl_decode(out_int, (uint8_t *)ndn_int_hc_01,
+                                         sizeof(ndn_int_hc_01)/sizeof(ndn_int_hc_01[0]));
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int_01)/sizeof(ndn_int_01[0]), pos_int);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int_01, out_int, pos_int);
@@ -167,8 +173,8 @@ void test_decode_ndn_hc_02(void)
 {
     uint8_t out_int[sizeof(ndn_int_02) / sizeof(ndn_int_02[0]) + 2];
 
-    unsigned pos_int = icnl_decode(out_int, (uint8_t *)ndn_int_hc_02,
-                                   sizeof(ndn_int_hc_02)/sizeof(ndn_int_hc_02[0]));
+    icnl_tlv_off_t pos_int = icnl_decode(out_int, (uint8_t *)ndn_int_hc_02,
+                                         sizeof(ndn_int_hc_02)/sizeof(ndn_int_hc_02[0]));
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int_02)/sizeof(ndn_int_02[0]), pos_int);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int_02, out_int, pos_int);

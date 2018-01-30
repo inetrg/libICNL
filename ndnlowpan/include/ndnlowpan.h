@@ -81,7 +81,7 @@ typedef enum {
  *
  * @return          The Type or Length field
  */
-uint64_t icnl_ndn_tlv_read(const uint8_t *in, unsigned *pos_in);
+icnl_tlv_off_t icnl_ndn_tlv_read(const uint8_t *in, icnl_tlv_off_t *pos_in);
 
 /**
  * @brief Writes the Type or Length field of a TLV
@@ -92,7 +92,7 @@ uint64_t icnl_ndn_tlv_read(const uint8_t *in, unsigned *pos_in);
  * @post            @p pos_out is forwarded to the position after the Type
  *                  or Length field
  */
-void icnl_ndn_tlv_write(uint64_t val, uint8_t *out, unsigned *pos_out);
+void icnl_ndn_tlv_write(icnl_tlv_off_t val, uint8_t *out, icnl_tlv_off_t *pos_out);
 
 /**
  * @brief   NDN Signature Types
@@ -113,8 +113,8 @@ typedef enum {
  *
  * @return      Number of bytes written to @p out
  */
-int icnl_ndn_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
-                    unsigned in_len);
+icnl_tlv_off_t icnl_ndn_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
+                               icnl_tlv_off_t in_len);
 
 /**
  * @brief Decodes an NDN message
@@ -126,8 +126,8 @@ int icnl_ndn_encode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
  *
  * @return      Number of bytes written to @p out
  */
-int icnl_ndn_decode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
-                    unsigned in_len);
+icnl_tlv_off_t icnl_ndn_decode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
+                               icnl_tlv_off_t in_len);
 
 #endif /* NDNLOWPAN_H */
 /** @} */

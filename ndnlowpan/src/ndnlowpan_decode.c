@@ -11,18 +11,18 @@
 
 #include "ndnlowpan.h"
 
-int icnl_ndn_decode_interest(uint8_t *out, const uint8_t *in, unsigned in_len)
+icnl_tlv_off_t icnl_ndn_decode_interest(uint8_t *out, const uint8_t *in,
+                                        icnl_tlv_off_t in_len)
 {
     memcpy(out, in, in_len);
 
     return in_len;
 }
 
-int icnl_ndn_decode_name(uint8_t *out, const uint8_t *in, unsigned *pos_in,
-                         const uint8_t *a)
+icnl_tlv_off_t icnl_ndn_decode_name(uint8_t *out, const uint8_t *in,
+                                    icnl_tlv_off_t *pos_in, const uint8_t *a)
 {
-    unsigned pos_out = 0;
-    unsigned name_len = 0;
+    icnl_tlv_off_t pos_out = 0, name_len;
     uint8_t out_total_name_len = 0;
     uint8_t *name_length;
 
@@ -46,7 +46,7 @@ int icnl_ndn_decode_name(uint8_t *out, const uint8_t *in, unsigned *pos_in,
             component_type = ICNL_NDN_TLV_IMPLICIT_SHA256_DIGEST_COMPONENT;
         }
 
-        unsigned offset = *pos_in + name_len;
+        icnl_tlv_off_t offset = *pos_in + name_len;
         while (*pos_in < offset) {
             out[pos_out++] = component_type;
             out_total_name_len += 1;
@@ -63,11 +63,10 @@ int icnl_ndn_decode_name(uint8_t *out, const uint8_t *in, unsigned *pos_in,
     return pos_out;
 }
 
-int icnl_ndn_decode_nonce(uint8_t *out, const uint8_t *in, unsigned *pos_in,
-                          const uint8_t *a)
+icnl_tlv_off_t icnl_ndn_decode_nonce(uint8_t *out, const uint8_t *in,
+                                     icnl_tlv_off_t *pos_in, const uint8_t *a)
 {
-    unsigned pos_out = 0;
-    unsigned nonce_len = 4;
+    icnl_tlv_off_t pos_out = 0, nonce_len = 4;
 
     if ((*a & 0x30) == 0x10) {
         nonce_len = 1;
@@ -87,11 +86,11 @@ int icnl_ndn_decode_nonce(uint8_t *out, const uint8_t *in, unsigned *pos_in,
     return pos_out;
 }
 
-int icnl_ndn_decode_interest_lifetime(uint8_t *out, const uint8_t *in,
-                                      unsigned *pos_in, const uint8_t *a)
+icnl_tlv_off_t icnl_ndn_decode_interest_lifetime(uint8_t *out, const uint8_t *in,
+                                                 icnl_tlv_off_t *pos_in,
+                                                 const uint8_t *a)
 {
-    unsigned pos_out = 0;
-    uint8_t length = 0;
+    icnl_tlv_off_t pos_out = 0, length = 0;
 
     if ((*a & 0x0E) == 0x00) {
         return pos_out;
@@ -127,13 +126,12 @@ int icnl_ndn_decode_interest_lifetime(uint8_t *out, const uint8_t *in,
     return pos_out;
 }
 
-int icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in, unsigned in_len)
+icnl_tlv_off_t icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in,
+                                           icnl_tlv_off_t in_len)
 {
-    unsigned pos_out = 0;
-    unsigned pos_in = 0;
+    icnl_tlv_off_t pos_out = 0, pos_in = 0, res = 0;
     const uint8_t *a;
     uint8_t *out_packet_length;
-    int res = 0;
 
     a = in + pos_in++;
 
@@ -166,18 +164,17 @@ int icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in, unsigned in_len
     return pos_out;
 }
 
-int icnl_ndn_decode_data(uint8_t *out, const uint8_t *in, unsigned in_len)
+icnl_tlv_off_t icnl_ndn_decode_data(uint8_t *out, const uint8_t *in, icnl_tlv_off_t in_len)
 {
     memcpy(out, in, in_len);
 
     return in_len;
 }
 
-int icnl_ndn_decode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
-                    unsigned in_len)
+icnl_tlv_off_t icnl_ndn_decode(uint8_t *out, icnl_proto_t proto, const uint8_t *in,
+                               icnl_tlv_off_t in_len)
 {
-    unsigned pos = 0;
-    unsigned out_len = 0;
+    icnl_tlv_off_t pos = 0, out_len = 0;
     uint8_t *dispatch = (uint8_t *) (in + pos++);
 
     if (proto == ICNL_PROTO_NDN) {
