@@ -134,7 +134,7 @@ icnl_tlv_off_t icnl_ndn_decode_interest_lifetime(uint8_t *out, const uint8_t *in
 icnl_tlv_off_t icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in,
                                            icnl_tlv_off_t in_len)
 {
-    icnl_tlv_off_t pos_out = 0, pos_in = 0, res = 0;
+    icnl_tlv_off_t pos_out = 0, pos_in = 0;
     const uint8_t *a;
     uint8_t *out_packet_length;
 
@@ -148,20 +148,9 @@ icnl_tlv_off_t icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in,
     /* skip packet length */
     pos_in++;
 
-    if ((res = icnl_ndn_decode_name(out + pos_out, in, &pos_in, a)) < 0) {
-        return res;
-    }
-    pos_out += res;
-
-    if ((res = icnl_ndn_decode_nonce(out + pos_out, in, &pos_in, a)) < 0) {
-        return res;
-    }
-    pos_out += res;
-
-    if ((res = icnl_ndn_decode_interest_lifetime(out + pos_out, in, &pos_in, a)) < 0) {
-        return res;
-    }
-    pos_out += res;
+    pos_out += icnl_ndn_decode_name(out + pos_out, in, &pos_in, a);
+    pos_out += icnl_ndn_decode_nonce(out + pos_out, in, &pos_in, a);
+    pos_out += icnl_ndn_decode_interest_lifetime(out + pos_out, in, &pos_in, a);
 
     memcpy(out + pos_out, in + pos_in, in_len - pos_in);
     pos_out += in_len - pos_in;
