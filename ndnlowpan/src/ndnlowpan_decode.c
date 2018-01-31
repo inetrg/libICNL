@@ -156,8 +156,67 @@ icnl_tlv_off_t icnl_ndn_decode_content(uint8_t *out, const uint8_t *in,
     icnl_ndn_tlv_write(len, out, &pos_out);
 
     memcpy(out + pos_out, in + *pos_in, len);
-    pos_in += len;
+    *pos_in += len;
     pos_out += len;
+
+    return pos_out;
+}
+
+icnl_tlv_off_t icnl_ndn_decode_signature_info(uint8_t *out, const uint8_t *in,
+                                              icnl_tlv_off_t *pos_in,
+                                              const uint8_t *a)
+{
+    uint8_t mode = *a & 0x38;
+    icnl_tlv_off_t pos_out = 0, len = 0;
+
+    if (mode == 0x00){
+        len = icnl_ndn_tlv_read(in, pos_in);
+        /* include sigtype type */
+        len += 1;
+        out[pos_out++] = ICNL_NDN_TLV_SIGNATURE_INFO;
+        icnl_ndn_tlv_write(len, out, &pos_out);
+        out[pos_out++] = ICNL_NDN_TLV_SIGNATURE_TYPE;
+        memcpy(out + pos_out, in + *pos_in, len - 1);
+        pos_out += len - 1;
+        *pos_in += len - 1;
+    }
+    else if (mode == 0x08) {
+        out[pos_out++] = ICNL_NDN_TLV_SIGNATURE_INFO;
+        out[pos_out++] = 3;
+        out[pos_out++] = ICNL_NDN_TLV_SIGNATURE_TYPE;
+        out[pos_out++] = 1;
+        out[pos_out++] = 0x00;
+    }
+
+    return pos_out;
+}
+
+icnl_tlv_off_t icnl_ndn_decode_signature_value(uint8_t *out, const uint8_t *in,
+                                               icnl_tlv_off_t *pos_in,
+                                               icnl_tlv_off_t in_len,
+                                               const uint8_t *a)
+{
+    uint8_t mode = *a & 0x38;
+    icnl_tlv_off_t pos_out = 0, len = 0;
+
+    if (mode == 0x00){
+        out[pos_out++] = ICNL_NDN_TLV_SIGNATURE_VALUE;
+        len = icnl_ndn_tlv_read(in, pos_in);
+        icnl_ndn_tlv_write(len, out, &pos_out);
+        memcpy(out + pos_out, in + *pos_in, len);
+        pos_out += len;
+        *pos_in += len;
+    }
+    else if (mode == 0x08) {
+        out[pos_out++] = ICNL_NDN_TLV_SIGNATURE_VALUE;
+        /* workaround for empty sig value in CCN-lite for NDN */
+        len = in_len - *pos_in ? 32 : 0;
+        out[pos_out++] = len;
+    }
+
+    memcpy(out + pos_out, in + *pos_in, len);
+    pos_out += len;
+    *pos_in += len;
 
     return pos_out;
 }
@@ -217,6 +276,8 @@ icnl_tlv_off_t icnl_ndn_decode_data_hc(uint8_t *out, const uint8_t *in,
     pos_out += icnl_ndn_decode_name(out + pos_out, in, &pos_in, a);
     pos_out += icnl_ndn_decode_meta_info(out + pos_out, in, &pos_in, b);
     pos_out += icnl_ndn_decode_content(out + pos_out, in, &pos_in, a);
+    pos_out += icnl_ndn_decode_signature_info(out + pos_out, in, &pos_in, a);
+    pos_out += icnl_ndn_decode_signature_value(out + pos_out, in, &pos_in, in_len, a);
 
     memcpy(out + pos_out, in + pos_in, in_len - pos_in);
     pos_out += in_len - pos_in;
