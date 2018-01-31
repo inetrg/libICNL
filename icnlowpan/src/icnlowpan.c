@@ -59,7 +59,7 @@ icnl_tlv_off_t icnl_decode(uint8_t *out, const uint8_t *in, icnl_tlv_off_t in_le
     else if ((*dispatch & 0x8F) == 0x80) {
         out_len = icnl_ndn_decode(out, ICNL_PROTO_NDN, in + pos, in_len - pos);
     }
-    else if (((*dispatch & 0xF0) == 0x80) && (*dispatch & 0x08)) {
+    else if ((*dispatch & 0x88) == 0x88) {
         out_len = icnl_ndn_decode(out, ICNL_PROTO_NDN_HC, in + pos, in_len - pos);
     }
 #endif
