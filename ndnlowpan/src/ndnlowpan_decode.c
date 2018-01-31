@@ -134,6 +134,9 @@ icnl_tlv_off_t icnl_ndn_decode_interest_lifetime(uint8_t *out, const uint8_t *in
 icnl_tlv_off_t icnl_ndn_decode_meta_info(uint8_t *out, const uint8_t *in,
                                          icnl_tlv_off_t *pos_in, const uint8_t *b)
 {
+    (void) in;
+    (void) pos_in;
+
     icnl_tlv_off_t pos_out = 0;
 
     if (b == NULL) {
