@@ -70,6 +70,26 @@ static const uint8_t ndn_data_hc_02[] = {
     0x09, 0x06, 0x03, 0x48, 0x41, 0x57, 0x01, 0x41,
     0x01, 0x31
 };
+static const uint8_t ndn_data_03[] = {
+    0x06, 0x3a, 0x07, 0x08, 0x08, 0x03, 0x48, 0x41,
+    0x57, 0x08, 0x01, 0x41, 0x14, 0x00, 0x15, 0x23,
+    0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+    0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+    0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+    0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+    0xaa, 0xaa, 0xaa, 0x16, 0x05, 0x1b, 0x01, 0x00,
+    0x1c, 0x00, 0x17, 0x00
+};
+static const uint8_t ndn_data_hc_03[] = {
+    0xF2, ICNL_DISPATCH_NDN_DATA_HC_A, 0x40,
+    0x31, 0x06, 0x03, 0x48, 0x41, 0x57, 0x01, 0x41,
+    0x23, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+    0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+    0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+    0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+    0xaa, 0xaa, 0xaa, 0xaa, 0x04, 0x01, 0x00, 0x1c,
+    0x00, 0x00
+};
 
 #ifdef MODULE_NDNLOWPAN
 void test_encode_ndn(void)
@@ -140,6 +160,18 @@ void test_encode_ndn_data_hc_02(void)
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data_hc_02, out_data, pos_data);
 }
 
+void test_encode_ndn_data_hc_03(void)
+{
+    uint8_t out_data[sizeof(ndn_data_03) / sizeof(ndn_data_03[0]) + 16];
+
+    icnl_tlv_off_t pos_data = icnl_encode(out_data, ICNL_PROTO_NDN_HC,
+                                          (uint8_t *)ndn_data_03,
+                                          sizeof(ndn_data_03)/sizeof(ndn_data_03[0]));
+
+    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data_hc_03)/sizeof(ndn_data_hc_03[0]), pos_data);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data_hc_03, out_data, pos_data);
+}
+
 void test_decode_ndn(void)
 {
     uint8_t out_int[sizeof(ndn_int_01)/sizeof(ndn_int_01[0])];
@@ -158,7 +190,7 @@ void test_decode_ndn(void)
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data_01, out_data, pos_data);
 }
 
-void test_decode_ndn_hc_01(void)
+void test_decode_ndn_int_hc_01(void)
 {
     uint8_t out_int[sizeof(ndn_int_01) / sizeof(ndn_int_01[0]) + 16];
 
@@ -169,7 +201,7 @@ void test_decode_ndn_hc_01(void)
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int_01, out_int, pos_int);
 }
 
-void test_decode_ndn_hc_02(void)
+void test_decode_ndn_int_hc_02(void)
 {
     uint8_t out_int[sizeof(ndn_int_02) / sizeof(ndn_int_02[0]) + 16];
 
@@ -178,6 +210,39 @@ void test_decode_ndn_hc_02(void)
 
     TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int_02)/sizeof(ndn_int_02[0]), pos_int);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int_02, out_int, pos_int);
+}
+
+void test_decode_ndn_data_hc_01(void)
+{
+    uint8_t out_data[sizeof(ndn_data_01) / sizeof(ndn_data_01[0]) + 16];
+
+    icnl_tlv_off_t pos_data = icnl_decode(out_data, (uint8_t *)ndn_data_hc_01,
+                                         sizeof(ndn_data_hc_01)/sizeof(ndn_data_hc_01[0]));
+
+    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data_01)/sizeof(ndn_data_01[0]), pos_data);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data_01, out_data, pos_data);
+}
+
+void test_decode_ndn_data_hc_02(void)
+{
+    uint8_t out_data[sizeof(ndn_data_02) / sizeof(ndn_data_02[0]) + 16];
+
+    icnl_tlv_off_t pos_data = icnl_decode(out_data, (uint8_t *)ndn_data_hc_02,
+                                         sizeof(ndn_data_hc_02)/sizeof(ndn_data_hc_02[0]));
+
+    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data_02)/sizeof(ndn_data_02[0]), pos_data);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data_02, out_data, pos_data);
+}
+
+void test_decode_ndn_data_hc_03(void)
+{
+    uint8_t out_data[sizeof(ndn_data_03) / sizeof(ndn_data_03[0]) + 16];
+
+    icnl_tlv_off_t pos_data = icnl_decode(out_data, (uint8_t *)ndn_data_hc_03,
+                                         sizeof(ndn_data_hc_03)/sizeof(ndn_data_hc_03[0]));
+
+    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_data_03)/sizeof(ndn_data_03[0]), pos_data);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_data_03, out_data, pos_data);
 }
 
 #endif
@@ -192,9 +257,13 @@ int main(void)
     RUN_TEST(test_encode_ndn_int_hc_02);
     RUN_TEST(test_encode_ndn_data_hc_01);
     RUN_TEST(test_encode_ndn_data_hc_02);
+    RUN_TEST(test_encode_ndn_data_hc_03);
     RUN_TEST(test_decode_ndn);
-    RUN_TEST(test_decode_ndn_hc_01);
-    RUN_TEST(test_decode_ndn_hc_02);
+    RUN_TEST(test_decode_ndn_int_hc_01);
+    RUN_TEST(test_decode_ndn_int_hc_02);
+    RUN_TEST(test_decode_ndn_data_hc_01);
+    RUN_TEST(test_decode_ndn_data_hc_02);
+    RUN_TEST(test_decode_ndn_data_hc_03);
 #endif
  
     return UNITY_END();

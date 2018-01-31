@@ -131,6 +131,37 @@ icnl_tlv_off_t icnl_ndn_decode_interest_lifetime(uint8_t *out, const uint8_t *in
     return pos_out;
 }
 
+icnl_tlv_off_t icnl_ndn_decode_meta_info(uint8_t *out, const uint8_t *in,
+                                         icnl_tlv_off_t *pos_in, const uint8_t *b)
+{
+    icnl_tlv_off_t pos_out = 0;
+
+    if (b == NULL) {
+        out[pos_out++] = ICNL_NDN_TLV_META_INFO;
+        out[pos_out++] = 0;
+    }
+
+    return pos_out;
+}
+
+icnl_tlv_off_t icnl_ndn_decode_content(uint8_t *out, const uint8_t *in,
+                                       icnl_tlv_off_t *pos_in, const uint8_t *a)
+{
+    (void) a;
+    icnl_tlv_off_t pos_out = 0, len;
+
+    len = icnl_ndn_tlv_read(in, pos_in);
+
+    out[pos_out++] = ICNL_NDN_TLV_CONTENT;
+    icnl_ndn_tlv_write(len, out, &pos_out);
+
+    memcpy(out + pos_out, in + *pos_in, len);
+    pos_in += len;
+    pos_out += len;
+
+    return pos_out;
+}
+
 icnl_tlv_off_t icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in,
                                            icnl_tlv_off_t in_len)
 {
@@ -151,6 +182,41 @@ icnl_tlv_off_t icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in,
     pos_out += icnl_ndn_decode_name(out + pos_out, in, &pos_in, a);
     pos_out += icnl_ndn_decode_nonce(out + pos_out, in, &pos_in, a);
     pos_out += icnl_ndn_decode_interest_lifetime(out + pos_out, in, &pos_in, a);
+
+    memcpy(out + pos_out, in + pos_in, in_len - pos_in);
+    pos_out += in_len - pos_in;
+
+    icnl_tlv_off_t tmp = 0;
+    icnl_ndn_tlv_write(pos_out - 2 - 8, out_packet_length, &tmp);
+    memmove(out_packet_length + tmp, out_packet_length + 9, pos_out);
+    pos_out -= 9 - tmp;
+
+    return pos_out;
+}
+
+icnl_tlv_off_t icnl_ndn_decode_data_hc(uint8_t *out, const uint8_t *in,
+                                       icnl_tlv_off_t in_len, uint8_t dispatch)
+{
+    icnl_tlv_off_t pos_out = 0, pos_in = 0;
+    const uint8_t *a, *b = NULL;
+    uint8_t *out_packet_length;
+
+    a = in + pos_in++;
+    if ((dispatch & 0x07) == 0x1) {
+        b = in + pos_in++;
+    }
+
+    out[pos_out++] = ICNL_NDN_TLV_DATA;
+    out_packet_length = out + (pos_out++);
+    /* skip maximum amount of possible length field size */
+    pos_out += 8;
+
+    /* skip packet length */
+    pos_in++;
+
+    pos_out += icnl_ndn_decode_name(out + pos_out, in, &pos_in, a);
+    pos_out += icnl_ndn_decode_meta_info(out + pos_out, in, &pos_in, b);
+    pos_out += icnl_ndn_decode_content(out + pos_out, in, &pos_in, a);
 
     memcpy(out + pos_out, in + pos_in, in_len - pos_in);
     pos_out += in_len - pos_in;
@@ -189,7 +255,8 @@ icnl_tlv_off_t icnl_ndn_decode(uint8_t *out, icnl_proto_t proto, const uint8_t *
             out_len = icnl_ndn_decode_interest_hc(out, in + pos, in_len - pos);
         }
         else if (*dispatch == ICNL_DISPATCH_NDN_DATA_HC_A) {
-            out_len = icnl_ndn_decode_interest_hc(out, in + pos, in_len - pos);
+            out_len = icnl_ndn_decode_data_hc(out, in + pos, in_len - pos,
+                                              *dispatch);
         }
     }
 
