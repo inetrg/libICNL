@@ -239,7 +239,7 @@ icnl_tlv_off_t icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in,
     pos_out += 8;
 
     /* skip packet length */
-    pos_in++;
+    icnl_ndn_tlv_read(in, &pos_in);
 
     pos_out += icnl_ndn_decode_name(out + pos_out, in, &pos_in, a);
     pos_out += icnl_ndn_decode_nonce(out + pos_out, in, &pos_in, a);
@@ -274,7 +274,7 @@ icnl_tlv_off_t icnl_ndn_decode_data_hc(uint8_t *out, const uint8_t *in,
     pos_out += 8;
 
     /* skip packet length */
-    pos_in++;
+    icnl_ndn_tlv_read(in, &pos_in);
 
     pos_out += icnl_ndn_decode_name(out + pos_out, in, &pos_in, a);
     pos_out += icnl_ndn_decode_meta_info(out + pos_out, in, &pos_in, b);
