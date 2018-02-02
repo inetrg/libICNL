@@ -78,3 +78,28 @@ void icnl_ndn_tlv_write(icnl_tlv_off_t val, uint8_t *out, icnl_tlv_off_t *pos_ou
         out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
     }
 }
+
+icnl_tlv_off_t icnl_ndn_tlv_hc_read(const uint8_t *in, icnl_tlv_off_t *pos_in)
+{
+    uint8_t tmp;
+    icnl_tlv_off_t val = 0;
+
+    while ((tmp = in[(*pos_in)++]) == 0xFF) {
+        val += tmp;
+    }
+
+    val += tmp;
+
+    return val;
+}
+
+void icnl_ndn_tlv_hc_write(icnl_tlv_off_t val, uint8_t *out, icnl_tlv_off_t *pos_out)
+{
+    while(val > 0xFF) {
+        out[(*pos_out)++] = 0xFF;
+        val -= 0xFF;
+    }
+    out[(*pos_out)++] = val;
+
+    return;
+}

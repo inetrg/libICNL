@@ -96,6 +96,31 @@ icnl_tlv_off_t icnl_ndn_tlv_read(const uint8_t *in, icnl_tlv_off_t *pos_in);
 void icnl_ndn_tlv_write(icnl_tlv_off_t val, uint8_t *out, icnl_tlv_off_t *pos_out);
 
 /**
+ * @brief Reads the Type or Length field of a TLV (compressed version)
+ *
+ * @param[in]       in      input buffer to read the Type or Length field from
+ * @param[in,out]   pos_in  current position within the input buffer @p in
+ *
+ * @post            @p pos_in is forwarded to the position after the Type
+ *                  or Length field
+ *
+ * @return          The Type or Length field
+ */
+icnl_tlv_off_t icnl_ndn_tlv_hc_read(const uint8_t *in, icnl_tlv_off_t *pos_in);
+
+/**
+ * @brief Writes the Type or Length field of a TLV (compressed version)
+ *
+ * @param[in]       val     value to write to @p out at position @p pos_out
+ * @param[out]      out     output buffer to write the Type or Length field to
+ * @param[in,out]   pos_out current position within the output buffer @p out
+ *
+ * @post            @p pos_out is forwarded to the position after the Type
+ *                  or Length field
+ */
+void icnl_ndn_tlv_hc_write(icnl_tlv_off_t val, uint8_t *out, icnl_tlv_off_t *pos_out);
+
+/**
  * @brief   NDN Signature Types
  * @{
  */

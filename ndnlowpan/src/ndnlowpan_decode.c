@@ -28,7 +28,7 @@ icnl_tlv_off_t icnl_ndn_decode_name(uint8_t *out, const uint8_t *in,
 
     out[pos_out++] = ICNL_NDN_TLV_NAME;
 
-    name_len = icnl_ndn_tlv_read(in, pos_in);
+    name_len = icnl_ndn_tlv_hc_read(in, pos_in);
     name_length = out + (pos_out++);
     /* skip maximum amount of possible length field size */
     pos_out += 8;
@@ -153,7 +153,7 @@ icnl_tlv_off_t icnl_ndn_decode_content(uint8_t *out, const uint8_t *in,
     (void) a;
     icnl_tlv_off_t pos_out = 0, len;
 
-    len = icnl_ndn_tlv_read(in, pos_in);
+    len = icnl_ndn_tlv_hc_read(in, pos_in);
 
     out[pos_out++] = ICNL_NDN_TLV_CONTENT;
     icnl_ndn_tlv_write(len, out, &pos_out);
@@ -173,7 +173,7 @@ icnl_tlv_off_t icnl_ndn_decode_signature_info(uint8_t *out, const uint8_t *in,
     icnl_tlv_off_t pos_out = 0, len = 0;
 
     if (mode == 0x00){
-        len = icnl_ndn_tlv_read(in, pos_in);
+        len = icnl_ndn_tlv_hc_read(in, pos_in);
         /* include sigtype type */
         len += 1;
         out[pos_out++] = ICNL_NDN_TLV_SIGNATURE_INFO;
@@ -204,7 +204,7 @@ icnl_tlv_off_t icnl_ndn_decode_signature_value(uint8_t *out, const uint8_t *in,
 
     if (mode == 0x00){
         out[pos_out++] = ICNL_NDN_TLV_SIGNATURE_VALUE;
-        len = icnl_ndn_tlv_read(in, pos_in);
+        len = icnl_ndn_tlv_hc_read(in, pos_in);
         icnl_ndn_tlv_write(len, out, &pos_out);
         memcpy(out + pos_out, in + *pos_in, len);
         pos_out += len;
@@ -239,7 +239,7 @@ icnl_tlv_off_t icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in,
     pos_out += 8;
 
     /* skip packet length */
-    icnl_ndn_tlv_read(in, &pos_in);
+    icnl_ndn_tlv_hc_read(in, &pos_in);
 
     pos_out += icnl_ndn_decode_name(out + pos_out, in, &pos_in, a);
     pos_out += icnl_ndn_decode_nonce(out + pos_out, in, &pos_in, a);
@@ -274,7 +274,7 @@ icnl_tlv_off_t icnl_ndn_decode_data_hc(uint8_t *out, const uint8_t *in,
     pos_out += 8;
 
     /* skip packet length */
-    icnl_ndn_tlv_read(in, &pos_in);
+    icnl_ndn_tlv_hc_read(in, &pos_in);
 
     pos_out += icnl_ndn_decode_name(out + pos_out, in, &pos_in, a);
     pos_out += icnl_ndn_decode_meta_info(out + pos_out, in, &pos_in, b);

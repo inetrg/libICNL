@@ -181,7 +181,7 @@ icnl_tlv_off_t icnl_ndn_encode_signature_info(uint8_t *out, const uint8_t *in,
     else {
         /* sig info length minus sigtype type */
         icnl_tlv_off_t tmp = icnl_ndn_tlv_read(in, pos_in) - sigtype_typelen;
-        icnl_ndn_tlv_write(tmp, out, &pos_out);
+        icnl_ndn_tlv_hc_write(tmp, out, &pos_out);
         /* skip sigtype type */
         icnl_ndn_tlv_read(in, pos_in);
         memcpy(out + pos_out, in + *pos_in, tmp);
@@ -291,7 +291,7 @@ icnl_tlv_off_t icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in,
     }
 
     icnl_tlv_off_t tmp = 0;
-    icnl_ndn_tlv_write(pos_out - 3 - 8, out_packet_length, &tmp);
+    icnl_ndn_tlv_hc_write(pos_out - 3 - 8, out_packet_length, &tmp);
     memmove(out_packet_length + tmp, out_packet_length + 9, pos_out - 3);
     pos_out -= 9 - tmp;
 
@@ -348,7 +348,7 @@ icnl_tlv_off_t icnl_ndn_encode_data_hc(uint8_t *out, const uint8_t *in,
     }
 
     icnl_tlv_off_t tmp = 0;
-    icnl_ndn_tlv_write(pos_out - 3 - 8, out_packet_length, &tmp);
+    icnl_ndn_tlv_hc_write(pos_out - 3 - 8, out_packet_length, &tmp);
     memmove(out_packet_length + tmp, out_packet_length + 9, pos_out - 3);
     pos_out -= 9 - tmp;
 
