@@ -86,6 +86,7 @@ icnl_tlv_off_t icnl_ndn_tlv_read(const uint8_t *in, icnl_tlv_off_t *pos_in);
 /**
  * @brief Writes the Type or Length field of a TLV
  *
+ * @param[in]       val     value to write to @p out at position @p pos_out
  * @param[out]      out     output buffer to write the Type or Length field to
  * @param[in,out]   pos_out current position within the output buffer @p out
  *
