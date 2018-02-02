@@ -301,7 +301,7 @@ icnl_tlv_off_t icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in,
 icnl_tlv_off_t icnl_ndn_encode_data_hc(uint8_t *out, const uint8_t *in,
                                        icnl_tlv_off_t in_len)
 {
-    icnl_tlv_off_t pos_out = 0, pos_in = 0;
+    icnl_tlv_off_t pos_out = 0, pos_in = 0, res = 0;
     uint8_t *a, *out_packet_length;
 
     out[pos_out++] = ICNL_DISPATCH_NDN_DATA_HC_A;
@@ -325,24 +325,26 @@ icnl_tlv_off_t icnl_ndn_encode_data_hc(uint8_t *out, const uint8_t *in,
 
         switch (type) {
             case ICNL_NDN_TLV_NAME:
-                pos_out += icnl_ndn_encode_name(out + pos_out, in, &pos_in, a);
+                res = icnl_ndn_encode_name(out + pos_out, in, &pos_in, a);
                 break;
             case ICNL_NDN_TLV_META_INFO:
-                pos_out += icnl_ndn_encode_meta_info(out + pos_out, in, &pos_in, a);
+                res = icnl_ndn_encode_meta_info(out + pos_out, in, &pos_in, a);
                 break;
             case ICNL_NDN_TLV_CONTENT:
-                pos_out += icnl_ndn_encode_content(out + pos_out, in, &pos_in, a);
+                res = icnl_ndn_encode_content(out + pos_out, in, &pos_in, a);
                 break;
             case ICNL_NDN_TLV_SIGNATURE_INFO:
-                pos_out += icnl_ndn_encode_signature_info(out + pos_out, in, &pos_in, a);
+                res = icnl_ndn_encode_signature_info(out + pos_out, in, &pos_in, a);
                 break;
             case ICNL_NDN_TLV_SIGNATURE_VALUE:
-                pos_out += icnl_ndn_encode_signature_value(out + pos_out, in, &pos_in, a);
+                res = icnl_ndn_encode_signature_value(out + pos_out, in, &pos_in, a);
                 break;
             default:
                 ICNL_DBG("error while encoding unknown Data TLV\n");
                 return 0;
         }
+
+        pos_out += res;
     }
 
     icnl_tlv_off_t tmp = 0;
