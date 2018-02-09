@@ -371,6 +371,17 @@ void test_decode_ndn_int_hc_02(void)
     TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int_02, out_int, pos_int);
 }
 
+void test_decode_ndn_int_hc_03(void)
+{
+    uint8_t out_int[sizeof(ndn_int_03) / sizeof(ndn_int_03[0]) + 16];
+
+    icnl_tlv_off_t pos_int = icnl_decode(out_int, (uint8_t *)ndn_int_hc_03,
+                                         sizeof(ndn_int_hc_03)/sizeof(ndn_int_hc_03[0]));
+
+    TEST_ASSERT_EQUAL_UINT(sizeof(ndn_int_03)/sizeof(ndn_int_03[0]), pos_int);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(ndn_int_03, out_int, pos_int);
+}
+
 void test_decode_ndn_data_hc_01(void)
 {
     uint8_t out_data[sizeof(ndn_data_01) / sizeof(ndn_data_01[0]) + 16];
@@ -433,6 +444,7 @@ int main(void)
     RUN_TEST(test_decode_ndn);
     RUN_TEST(test_decode_ndn_int_hc_01);
     RUN_TEST(test_decode_ndn_int_hc_02);
+    RUN_TEST(test_decode_ndn_int_hc_03);
     RUN_TEST(test_decode_ndn_data_hc_01);
     RUN_TEST(test_decode_ndn_data_hc_02);
     RUN_TEST(test_decode_ndn_data_hc_03);

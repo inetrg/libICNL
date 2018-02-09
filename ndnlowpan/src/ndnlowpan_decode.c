@@ -131,6 +131,32 @@ icnl_tlv_off_t icnl_ndn_decode_interest_lifetime(uint8_t *out, const uint8_t *in
     return pos_out;
 }
 
+icnl_tlv_off_t icnl_ndn_decode_selectors(uint8_t *out, const uint8_t *in,
+                                         icnl_tlv_off_t *pos_in,
+                                         const uint8_t *b)
+{
+    icnl_tlv_off_t pos_out = 0, length = 0;
+    uint8_t *out_tlv_len;
+
+    if (!b) {
+        return pos_out;
+    }
+
+    out[pos_out++] = ICNL_NDN_TLV_SELECTORS;
+
+    out_tlv_len = out + (pos_out++);
+
+    if ((*b & 0x02)) {
+        out[pos_out++] = ICNL_NDN_TLV_MUST_BE_FRESH;
+        icnl_ndn_tlv_write(0, out, &pos_out);
+        length += 2;
+    }
+
+    *out_tlv_len = length;
+
+    return pos_out;
+}
+
 icnl_tlv_off_t icnl_ndn_decode_meta_info(uint8_t *out, const uint8_t *in,
                                          icnl_tlv_off_t *pos_in, const uint8_t *b)
 {
@@ -225,33 +251,45 @@ icnl_tlv_off_t icnl_ndn_decode_signature_value(uint8_t *out, const uint8_t *in,
 }
 
 icnl_tlv_off_t icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in,
-                                           icnl_tlv_off_t in_len)
+                                           icnl_tlv_off_t in_len, uint8_t dispatch)
 {
     icnl_tlv_off_t pos_out = 0, pos_in = 0;
-    const uint8_t *a;
+    const uint8_t *a, *b = NULL;
     uint8_t *out_packet_length;
 
     a = in + pos_in++;
 
+    if (dispatch == ICNL_DISPATCH_NDN_INT_HC_AB) {
+        b = in + pos_in++;
+    }
+
     out[pos_out++] = ICNL_NDN_TLV_INTEREST;
     out_packet_length = out + (pos_out++);
-    /* skip maximum amount of possible length field size */
-    pos_out += 8;
 
     /* skip packet length */
     icnl_ndn_tlv_hc_read(in, &pos_in);
 
     pos_out += icnl_ndn_decode_name(out + pos_out, in, &pos_in, a);
+    pos_out += icnl_ndn_decode_selectors(out + pos_out, in, &pos_in, b);
     pos_out += icnl_ndn_decode_nonce(out + pos_out, in, &pos_in, a);
     pos_out += icnl_ndn_decode_interest_lifetime(out + pos_out, in, &pos_in, a);
 
     memcpy(out + pos_out, in + pos_in, in_len - pos_in);
     pos_out += in_len - pos_in;
 
-    icnl_tlv_off_t tmp = 0;
-    icnl_ndn_tlv_write(pos_out - 2 - 8, out_packet_length, &tmp);
-    memmove(out_packet_length + tmp, out_packet_length + 9, pos_out);
-    pos_out -= 9 - tmp;
+    uint8_t tmp[9];
+    icnl_tlv_off_t tmp_len = 0;
+    icnl_ndn_tlv_hc_write(pos_out - (out_packet_length - out + 1), tmp, &tmp_len);
+
+    icnl_tlv_off_t skip = tmp_len - 1;
+
+    if (skip) {
+        memmove(out_packet_length + skip, out_packet_length,
+                pos_out - (out_packet_length - out));
+        pos_out += skip;
+    }
+
+    memcpy(out_packet_length, tmp, tmp_len);
 
     return pos_out;
 }
@@ -315,10 +353,11 @@ icnl_tlv_off_t icnl_ndn_decode(uint8_t *out, icnl_proto_t proto, const uint8_t *
         }
     }
     else if (proto == ICNL_PROTO_NDN_HC) {
-        if (*dispatch == ICNL_DISPATCH_NDN_INT_HC_A) {
-            out_len = icnl_ndn_decode_interest_hc(out, in + pos, in_len - pos);
+        if ((*dispatch & 0xF8) == ICNL_DISPATCH_NDN_INT_HC_A) {
+            out_len = icnl_ndn_decode_interest_hc(out, in + pos, in_len - pos,
+                                                  *dispatch);
         }
-        else if (*dispatch == ICNL_DISPATCH_NDN_DATA_HC_A) {
+        else if ((*dispatch & 0xF8 ) == ICNL_DISPATCH_NDN_DATA_HC_A) {
             out_len = icnl_ndn_decode_data_hc(out, in + pos, in_len - pos,
                                               *dispatch);
         }
