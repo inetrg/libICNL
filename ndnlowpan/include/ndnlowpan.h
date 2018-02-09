@@ -25,30 +25,36 @@
 /**
  * @brief   Dispatch type for NDN Interest
  */
-#define ICNL_DISPATCH_NDN_INT       (0x80)
+#define ICNL_DISPATCH_NDN_INT           (0x80)
 
 /**
  * @brief   Dispatch type for NDN Data
  */
-#define ICNL_DISPATCH_NDN_DATA      (0x90)
+#define ICNL_DISPATCH_NDN_DATA          (0x90)
 
 /**
  * @brief   Dispatch type for NDN Interest with header compression
  *          A octet follows.
  */
-#define ICNL_DISPATCH_NDN_INT_HC_A  (0x88)
+#define ICNL_DISPATCH_NDN_INT_HC_A      (0x88)
 
 /**
  * @brief   Dispatch type for NDN Interest with header compression
  *          A and B octet follows.
  */
-#define ICNL_DISPATCH_NDN_INT_HC_AB (0x89)
+#define ICNL_DISPATCH_NDN_INT_HC_AB     (0x89)
 
 /**
  * @brief   Dispatch type for NDN Data with header compression
  *          A octet follows.
  */
-#define ICNL_DISPATCH_NDN_DATA_HC_A (0x98)
+#define ICNL_DISPATCH_NDN_DATA_HC_A     (0x98)
+
+/**
+ * @brief   Dispatch type for NDN Data with header compression
+ *          A and B octet follows.
+ */
+#define ICNL_DISPATCH_NDN_DATA_HC_AB    (0x99)
 
 /**
  * @brief   NDN TLVs
