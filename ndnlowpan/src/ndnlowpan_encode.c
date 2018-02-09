@@ -115,6 +115,36 @@ icnl_tlv_off_t icnl_ndn_encode_nonce(uint8_t *out, const uint8_t *in, icnl_tlv_o
     return pos_out;
 }
 
+icnl_tlv_off_t icnl_ndn_encode_selectors(uint8_t *out, const uint8_t *in, icnl_tlv_off_t *pos_in,
+                                         uint8_t *b)
+{
+    icnl_tlv_off_t pos_out = 0, res = 0;
+
+    *b &= 0x01;
+
+    icnl_tlv_off_t sel_len = icnl_ndn_tlv_read(in, pos_in) + *pos_in;
+
+    while (*pos_in < sel_len) {
+        icnl_tlv_off_t type = icnl_ndn_tlv_read(in, pos_in);
+
+        switch (type) {
+            case ICNL_NDN_TLV_MUST_BE_FRESH:
+                res = 0;
+                /* skip MustBeFresh TLV length */
+                icnl_ndn_tlv_read(in, pos_in);
+                *b |= 0x02;
+                break;
+            default:
+                ICNL_DBG("error while encoding unknown Interest Selector TLV\n");
+                return 0;
+        }
+
+        pos_out += res;
+    }
+
+    return pos_out;
+}
+
 icnl_tlv_off_t icnl_ndn_encode_meta_info(uint8_t *out, const uint8_t *in, icnl_tlv_off_t *pos_in,
                                          uint8_t *a)
 {
@@ -274,6 +304,9 @@ icnl_tlv_off_t icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in,
         switch (type) {
             case ICNL_NDN_TLV_NAME:
                 res = icnl_ndn_encode_name(out + pos_out, in, &pos_in, a);
+                break;
+            case ICNL_NDN_TLV_SELECTORS:
+                res = icnl_ndn_encode_selectors(out + pos_out, in, &pos_in, &b);
                 break;
             case ICNL_NDN_TLV_NONCE:
                 res = icnl_ndn_encode_nonce(out + pos_out, in, &pos_in, a);
