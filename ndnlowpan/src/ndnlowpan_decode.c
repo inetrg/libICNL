@@ -160,15 +160,50 @@ icnl_tlv_off_t icnl_ndn_decode_selectors(uint8_t *out, const uint8_t *in,
 icnl_tlv_off_t icnl_ndn_decode_meta_info(uint8_t *out, const uint8_t *in,
                                          icnl_tlv_off_t *pos_in, const uint8_t *b)
 {
-    (void) in;
-    (void) pos_in;
+    icnl_tlv_off_t pos_out = 0, tmp;
+    uint8_t *out_tlv_len, tmp_b;
 
-    icnl_tlv_off_t pos_out = 0;
+    out[pos_out++] = ICNL_NDN_TLV_META_INFO;
+    out_tlv_len = out + (pos_out++);
+
+    tmp = pos_out;
 
     if (b == NULL) {
-        out[pos_out++] = ICNL_NDN_TLV_META_INFO;
-        out[pos_out++] = 0;
+        *out_tlv_len = 0;
+        return pos_out;
     }
+
+    /* ContentType not implemented yet */
+
+    if (*b & 0x70) {
+        unsigned len = 0;
+        tmp_b = *b & 0x70;
+
+        if (tmp_b == 0x10) {
+            len += 1;
+        }
+        else if (tmp_b == 0x20) {
+            len += 2;
+        }
+        else if (tmp_b == 0x30) {
+            len += 4;
+        }
+        else if (tmp_b == 0x40) {
+            len += 8;
+        }
+
+        out[pos_out++] = ICNL_NDN_TLV_FRESHNESS_PERIOD;
+        out[pos_out++] = len;
+
+        memcpy(out + pos_out, in + *pos_in, len);
+        pos_out += len;
+        *pos_in += len;
+    }
+
+    /* FinalBlockID not implemented yet */
+
+    icnl_tlv_off_t t = 0;
+    icnl_ndn_tlv_write(pos_out - tmp, out_tlv_len, &t);
 
     return pos_out;
 }
