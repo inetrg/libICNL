@@ -135,6 +135,9 @@ icnl_tlv_off_t icnl_ndn_decode_selectors(uint8_t *out, const uint8_t *in,
                                          icnl_tlv_off_t *pos_in,
                                          const uint8_t *b)
 {
+    (void) in;
+    (void) pos_in;
+
     icnl_tlv_off_t pos_out = 0, length = 0;
     uint8_t *out_tlv_len;
 

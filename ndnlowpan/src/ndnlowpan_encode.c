@@ -118,6 +118,8 @@ icnl_tlv_off_t icnl_ndn_encode_nonce(uint8_t *out, const uint8_t *in, icnl_tlv_o
 icnl_tlv_off_t icnl_ndn_encode_selectors(uint8_t *out, const uint8_t *in, icnl_tlv_off_t *pos_in,
                                          uint8_t *b)
 {
+    (void) out;
+
     icnl_tlv_off_t pos_out = 0, res = 0;
 
     *b &= 0x01;
