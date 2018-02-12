@@ -165,9 +165,10 @@ icnl_tlv_off_t icnl_ndn_encode_content(uint8_t *out, const uint8_t *in, icnl_tlv
 {
     (void) a;
 
-    icnl_tlv_off_t pos_out = 0, tmp = *pos_in;
-    icnl_tlv_off_t length = icnl_ndn_tlv_read(in, pos_in) + ((*pos_in) - tmp);
-    *pos_in = tmp;
+    icnl_tlv_off_t pos_out = 0;
+    icnl_tlv_off_t length = icnl_ndn_tlv_read(in, pos_in);
+
+    icnl_ndn_tlv_hc_write(length, out, &pos_out);
 
     memcpy(out + pos_out, in + *pos_in, length);
     pos_out += length;
