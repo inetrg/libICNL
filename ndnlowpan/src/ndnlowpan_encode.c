@@ -146,16 +146,44 @@ icnl_tlv_off_t icnl_ndn_encode_selectors(uint8_t *out, const uint8_t *in, icnl_t
 }
 
 icnl_tlv_off_t icnl_ndn_encode_meta_info(uint8_t *out, const uint8_t *in, icnl_tlv_off_t *pos_in,
-                                         uint8_t *a)
+                                         uint8_t *b)
 {
-    (void) a;
+    icnl_tlv_off_t pos_out = 0, res = 0, length;
 
-    icnl_tlv_off_t pos_out = 0;
-    icnl_tlv_off_t length = icnl_ndn_tlv_read(in, pos_in);
+    icnl_tlv_off_t meta_len = icnl_ndn_tlv_read(in, pos_in) + *pos_in;
 
-    memcpy(out + pos_out, in + *pos_in, length);
-    pos_out += length;
-    *pos_in += length;
+    while (*pos_in < meta_len) {
+        icnl_tlv_off_t type = icnl_ndn_tlv_read(in, pos_in);
+
+        switch (type) {
+            case ICNL_NDN_TLV_FRESHNESS_PERIOD:
+                res = 0;
+                length = icnl_ndn_tlv_read(in, pos_in);
+                if (length == 1) {
+                    *b |= 0x10;
+                }
+                else if (length == 2) {
+                    *b |= 0x20;
+                }
+                else if (length == 4) {
+                    *b |= 0x30;
+                }
+                else if (length == 8) {
+                    *b |= 0x40;
+                }
+
+                memcpy(out + pos_out, in + *pos_in, length);
+                *pos_in += length;
+                pos_out += length;
+
+                break;
+            default:
+                ICNL_DBG("error while encoding unknown Data MetaInfo TLV\n");
+                return 0;
+        }
+
+        pos_out += res;
+    }
 
     return pos_out;
 }
@@ -386,7 +414,7 @@ icnl_tlv_off_t icnl_ndn_encode_data_hc(uint8_t *out, const uint8_t *in,
                 res = icnl_ndn_encode_name(out + pos_out, in, &pos_in, a);
                 break;
             case ICNL_NDN_TLV_META_INFO:
-                res = icnl_ndn_encode_meta_info(out + pos_out, in, &pos_in, a);
+                res = icnl_ndn_encode_meta_info(out + pos_out, in, &pos_in, &b);
                 break;
             case ICNL_NDN_TLV_CONTENT:
                 res = icnl_ndn_encode_content(out + pos_out, in, &pos_in, a);

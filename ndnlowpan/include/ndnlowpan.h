@@ -74,6 +74,7 @@ typedef enum {
     ICNL_NDN_TLV_CONTENT                          = 0x15,   /**< NDN Content */
     ICNL_NDN_TLV_SIGNATURE_INFO                   = 0x16,   /**< NDN SignatureInfo */
     ICNL_NDN_TLV_SIGNATURE_VALUE                  = 0x17,   /**< NDN SignatureValue */
+    ICNL_NDN_TLV_FRESHNESS_PERIOD                 = 0x19,   /**< NDN Freshness Period MetaInfo */
     ICNL_NDN_TLV_SIGNATURE_TYPE                   = 0x1b,   /**< NDN SignatureType */
 } icnl_ndn_tlv_t;
 /** @} */
