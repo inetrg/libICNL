@@ -95,7 +95,7 @@ icnl_tlv_off_t icnl_ndn_tlv_hc_read(const uint8_t *in, icnl_tlv_off_t *pos_in)
 
 void icnl_ndn_tlv_hc_write(icnl_tlv_off_t val, uint8_t *out, icnl_tlv_off_t *pos_out)
 {
-    while(val > 0xFF) {
+    while(val >= 0xFF) {
         out[(*pos_out)++] = 0xFF;
         val -= 0xFF;
     }
