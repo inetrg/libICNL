@@ -49,8 +49,23 @@ icnl_tlv_off_t icnl_ndn_tlv_read(const uint8_t *in, icnl_tlv_off_t *pos_in)
 void icnl_ndn_tlv_write(icnl_tlv_off_t val, uint8_t *out, icnl_tlv_off_t *pos_out)
 {
     if (0) {}
+    else if (val < 253) {
+        out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
+    }
+    else if (val <= UINT16_MAX) {
+        out[(*pos_out)++] = 253;
+        out[(*pos_out)++] = (uint8_t) ((val >>  8) & 0xFF);
+        out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
+    }
+    else if (val < UINT32_MAX) {
+        out[(*pos_out)++] = 254;
+        out[(*pos_out)++] = (uint8_t) ((val >> 24) & 0xFF);
+        out[(*pos_out)++] = (uint8_t) ((val >> 16) & 0xFF);
+        out[(*pos_out)++] = (uint8_t) ((val >>  8) & 0xFF);
+        out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
+    }
 #if ICNL_OPT_OFFSET == 64
-    else if (val & (((icnl_tlv_off_t) -1) << 32)) {
+    else {
         out[(*pos_out)++] = 255;
         out[(*pos_out)++] = (uint8_t) ((val >> 56) & 0xFF);
         out[(*pos_out)++] = (uint8_t) ((val >> 48) & 0xFF);
@@ -62,21 +77,6 @@ void icnl_ndn_tlv_write(icnl_tlv_off_t val, uint8_t *out, icnl_tlv_off_t *pos_ou
         out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
     }
 #endif
-    else if (val & (((icnl_tlv_off_t) -1) << 16)) {
-        out[(*pos_out)++] = 254;
-        out[(*pos_out)++] = (uint8_t) ((val >> 24) & 0xFF);
-        out[(*pos_out)++] = (uint8_t) ((val >> 16) & 0xFF);
-        out[(*pos_out)++] = (uint8_t) ((val >>  8) & 0xFF);
-        out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
-    }
-    else if (val & (((icnl_tlv_off_t) -1) << 8)) {
-        out[(*pos_out)++] = 253;
-        out[(*pos_out)++] = (uint8_t) ((val >>  8) & 0xFF);
-        out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
-    }
-    else {
-        out[(*pos_out)++] = (uint8_t) ((val >>  0) & 0xFF);
-    }
 }
 
 icnl_tlv_off_t icnl_ndn_tlv_hc_read(const uint8_t *in, icnl_tlv_off_t *pos_in)
