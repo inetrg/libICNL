@@ -317,13 +317,13 @@ icnl_tlv_off_t icnl_ndn_decode_interest_hc(uint8_t *out, const uint8_t *in,
 
     uint8_t tmp[9];
     icnl_tlv_off_t tmp_len = 0;
-    icnl_ndn_tlv_hc_write(pos_out - (out_packet_length - out + 1), tmp, &tmp_len);
+    icnl_tlv_off_t ll = pos_out - (out_packet_length - out);
+    icnl_ndn_tlv_write(ll - 1, tmp, &tmp_len);
 
     icnl_tlv_off_t skip = tmp_len - 1;
 
     if (skip) {
-        memmove(out_packet_length + skip, out_packet_length,
-                pos_out - (out_packet_length - out));
+        memmove(out_packet_length + skip, out_packet_length, ll);
         pos_out += skip;
     }
 
@@ -340,14 +340,12 @@ icnl_tlv_off_t icnl_ndn_decode_data_hc(uint8_t *out, const uint8_t *in,
     uint8_t *out_packet_length;
 
     a = in + pos_in++;
-    if ((dispatch & 0x07) == 0x1) {
+    if (dispatch == ICNL_DISPATCH_NDN_DATA_HC_AB) {
         b = in + pos_in++;
     }
 
     out[pos_out++] = ICNL_NDN_TLV_DATA;
     out_packet_length = out + (pos_out++);
-    /* skip maximum amount of possible length field size */
-    pos_out += 8;
 
     /* skip packet length */
     icnl_ndn_tlv_hc_read(in, &pos_in);
@@ -361,10 +359,20 @@ icnl_tlv_off_t icnl_ndn_decode_data_hc(uint8_t *out, const uint8_t *in,
     memcpy(out + pos_out, in + pos_in, in_len - pos_in);
     pos_out += in_len - pos_in;
 
-    icnl_tlv_off_t tmp = 0;
-    icnl_ndn_tlv_write(pos_out - 2 - 8, out_packet_length, &tmp);
-    memmove(out_packet_length + tmp, out_packet_length + 9, pos_out);
-    pos_out -= 9 - tmp;
+    uint8_t tmp[9];
+    icnl_tlv_off_t tmp_len = 0;
+    icnl_tlv_off_t ll = pos_out - (out_packet_length - out);
+    icnl_ndn_tlv_write(ll - 1, tmp, &tmp_len);
+
+    icnl_tlv_off_t skip = tmp_len - 1;
+
+    if (skip) {
+        memmove(out_packet_length + skip, out_packet_length, ll);
+        pos_out += skip;
+    }
+
+    memcpy(out_packet_length, tmp, tmp_len);
+
 
     return pos_out;
 }

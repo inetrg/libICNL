@@ -356,7 +356,8 @@ icnl_tlv_off_t icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in,
 
     uint8_t tmp[9];
     icnl_tlv_off_t tmp_len = 0;
-    icnl_ndn_tlv_hc_write(pos_out - (out_packet_length - out + 1), tmp, &tmp_len);
+    icnl_tlv_off_t ll = pos_out - (out_packet_length - out);
+    icnl_ndn_tlv_hc_write(ll - 1, tmp, &tmp_len);
 
     icnl_tlv_off_t skip = tmp_len - 1;
 
@@ -373,8 +374,7 @@ icnl_tlv_off_t icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in,
     }
 
     if (skip) {
-        memmove(out_packet_length + skip, out_packet_length,
-                pos_out - (out_packet_length - out));
+        memmove(out_packet_length + skip, out_packet_length, ll);
         pos_out += skip;
     }
 
@@ -437,7 +437,8 @@ icnl_tlv_off_t icnl_ndn_encode_data_hc(uint8_t *out, const uint8_t *in,
 
     uint8_t tmp[9];
     icnl_tlv_off_t tmp_len = 0;
-    icnl_ndn_tlv_hc_write(pos_out - (out_packet_length - out + 1), tmp, &tmp_len);
+    icnl_tlv_off_t ll = pos_out - (out_packet_length - out);
+    icnl_ndn_tlv_hc_write(ll - 1, tmp, &tmp_len);
 
     icnl_tlv_off_t skip = tmp_len - 1;
 
@@ -454,8 +455,7 @@ icnl_tlv_off_t icnl_ndn_encode_data_hc(uint8_t *out, const uint8_t *in,
     }
 
     if (skip) {
-        memmove(out_packet_length + skip, out_packet_length,
-                pos_out - (out_packet_length - out));
+        memmove(out_packet_length + skip, out_packet_length, ll);
         pos_out += skip;
     }
 
