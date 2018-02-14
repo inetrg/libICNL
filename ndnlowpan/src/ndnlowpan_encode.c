@@ -353,7 +353,6 @@ icnl_tlv_off_t icnl_ndn_encode_interest_hc(uint8_t *out, const uint8_t *in,
         pos_out += res;
     }
 
-
     uint8_t tmp[9];
     icnl_tlv_off_t tmp_len = 0;
     icnl_tlv_off_t ll = pos_out - (out_packet_length - out);

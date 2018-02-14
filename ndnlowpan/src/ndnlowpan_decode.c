@@ -373,7 +373,6 @@ icnl_tlv_off_t icnl_ndn_decode_data_hc(uint8_t *out, const uint8_t *in,
 
     memcpy(out_packet_length, tmp, tmp_len);
 
-
     return pos_out;
 }
 
