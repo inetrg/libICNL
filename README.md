@@ -2,7 +2,7 @@
 
 _*Work in Progress*_
 
-**libICNL** is the reference implemenation for [ICNLoWPAN](https://tools.ietf.org/html/draft-gundogan-icnrg-ccnlowpan-00).
+**libICNL** is the reference implemenation for [ICNLoWPAN](https://tools.ietf.org/html/draft-gundogan-icnrg-ccnlowpan-01).
 This implementation compiles to a static library and can easily be integrated
 into existing NDN and CCNx implementations.
 
